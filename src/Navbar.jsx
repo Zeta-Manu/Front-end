@@ -1,14 +1,24 @@
+import React from "react";
+import { AppBar, Toolbar, Typography, Button } from '@mui/material';
+import LanguageIcon from '@mui/icons-material/Language';
+import SettingsIcon from '@mui/icons-material/Settings';
+
 const Navbar = () => {
 
     return(
-        <div className="fixed w-full z-[100] top-0 left-0">
-            <div className="relative bg-white flex gap-1 items-center place-items-center justify-between h-[64px] text-neutral-600">
-                <h1 style={{ color: '#622589' }}>Manu</h1>
-                <div className="ml-auto">
-                    <button>Language</button>
-                    <button>Logout</button>
-                    <button>Settings</button>
-                </div>
+        <div className="fixed w-screen h-screen flex justify-center items-center">
+            <div className="w-2/3">
+                <React.Fragment> 
+                    <AppBar sx={{ background: "#063970" ,borderRadius: '15px', boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)'}} className="my-2 ml-10 mr-2">
+                        <Toolbar>
+                            <Typography className="text-white">Manu</Typography>
+                            <LanguageIcon sx={{ marginLeft: 'auto'}} />
+                            <Button variant="contained" sx={{ marginLeft: '10px'}}>Login</Button>
+                            <SettingsIcon sx={{ marginLeft: '10px'}} />
+                        </Toolbar>
+                    </AppBar>
+
+                </React.Fragment>
             </div>
         </div>
     );

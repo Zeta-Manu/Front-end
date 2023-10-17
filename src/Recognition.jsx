@@ -1,10 +1,13 @@
 import { useRef, useState } from "react";
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 
 const Recognition = () => {
   const userVideo = useRef();
   const [streamActive, setStreamActive] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
+  const confident = 100; //from backend
 
 
   /*function to on/off stream*/
@@ -66,16 +69,67 @@ const Recognition = () => {
     }
   };
 
+  const getColor=(confident) => {
+    let opacity;
+    if(confident<50){
+      opacity=(confident-1)/49;
+      opacity=1-opacity;
+      opacity=Math.max(opacity, 0.3);
+      return `rgba(255, 0, 0, ${opacity})`; // Red=>inverse opacity
+    } else if (confident>=50 && confident<=60) {
+      opacity=(confident-50)/10;
+      opacity=Math.max(opacity, 0.5);
+      return `rgba(255, 204, 0, ${opacity})`; // Yellow
+    } else {//61=>100
+      opacity=(confident-60)/40;
+      opacity=Math.max(opacity, 0.5);
+      return `rgba(0, 255, 0, ${opacity})`; // Green
+    }
+  }
+
 
   return (
     <div className="fixed flex w-screen h-screen">
-      <div className="flex w-1/4 h-9/10 mt-20">
-        <div className="w-full h-5/6 bg-[#EDEDED] m-10 rounded-lg p-5"> {/*#F7F7F7*/}
+      <div className="flex  flex-col w-1/3 h-9/10 mt-20">
+        <h1 className="text-black mx-10 mt-2 font-bold">Translation</h1>
+        <div className="flex h-3/6 bg-[#EDEDED] mx-10 mt-1 rounded-lg p-5"> {/*#F7F7F7*/}
           <h1 className="text-black font-italic">Translation...</h1>
         </div>
+        <div className="flex rounded-lg h-2/6 mx-10 mt-4 bg-[#e7f2f6] p-2"> {/*#222222, #F7F7F7*/}
+        <CircularProgressbar
+          value={confident}
+          text={`${confident}%`}
+          styles={{
+            root: {},
+            path: {
+              stroke: getColor(confident),
+              strokeLinecap: 'butt',
+              transition: 'stroke-dashoffset 0.5s east 0s',
+              transform: 'rotate(0.25turn)',
+              transformOrigin: 'center center',
+            },
+            trail: {
+              stroke: '#d6d6d6',
+              strokeLinecap: 'butt',
+              transform: 'rotate(0.25turn)',
+              transformOrigin: 'center center',
+            },
+            text: {
+              fill: getColor(confident), // Change text color dynamically
+              fontSize: '25px',
+              dominantBaseline: 'middle',
+              fontWeight: 'bold',
+              textAnchor: 'middle',
+            },
+            background: {
+              fill: '#3e98c7',
+            },
+          }}
+        />
+        </div>
       </div>
-      <div className="flex flex-col w-3/4 mt-20">
-        <div className="flex w-full h-3/4 overflow-hidden bg-[#9EB3CD] border-black border-2 -mx-4 mt-10 relative">
+      <div className="flex flex-col w-2/3 mt-20">
+        <div className="flex w-full h-3/4 overflow-hidden bg-[#9EB3CD] border-black border-2 -mx-4 mt-2 relative">
           <video ref={userVideo} autoPlay playsInline className="w-full h-full" />
           {!streamActive && (
             <div className="absolute inset-0 flex items-center justify-center">
