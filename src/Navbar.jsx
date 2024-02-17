@@ -7,7 +7,7 @@ import { Link } from "react-router-dom";
 const Navbar = () => {
 
     return (
-        <div className="fixed w-screen h-screen flex justify-center items-center">
+        <div className="sticky top-0 flex justify-center items-center">
             <div className="w-2/3">
                 <React.Fragment>
                     <AppBar sx={{ background: "#063970", boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}>

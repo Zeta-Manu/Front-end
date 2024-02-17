@@ -5,7 +5,7 @@ import stat_icon from './assets/stat.png'
 
 const Home = () => {
     return (
-        <div className="fixed flex justify-center items-center w-screen h-screen">
+        <div className="flex justify-center items-center w-screen h-screen">
             <Manucard
                 imageSrc={recognition_icon}
                 title="Translation"

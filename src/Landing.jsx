@@ -6,7 +6,7 @@ const Landing = () => {
 
   
     return (
-      <div className="fixed flex w-screen h-screen">
+      <div className="flex">
         <div className="flex w-full mt-20">
           <div className="flex flex-col w-full mt-4 mb-5 mx-10 p-2 bg-[#D7EAEF] backdrop-blur-5 bg-opacity-0.7 drop-shadow-lg rounded-xl">
             <div className="flex flex-row">
@@ -30,7 +30,7 @@ const Landing = () => {
                 </Tilt>
               </div>
             </div>
-            <div className="flex h-2/6 w-full items-center justify-center">
+            <div className="flex h-2/6 w-full items-center justify-center mt-8 mb-5">
               <Link to="/">
                 <button className="bg-[#EB9980] text-white font-semibold py-8 px-40 rounded" style={{ boxShadow: "0 0.25rem 0.25rem 0.4rem rgba(0, 0, 0, 0.25)" }}>Start your Journey</button>
               </Link>
