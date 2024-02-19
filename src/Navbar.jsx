@@ -5,10 +5,13 @@ import { AppBar, Toolbar, Button, Typography } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Link } from "react-router-dom";
+import { AuthFunction } from "./FakeServiceAuth";
 
 const Navbar = () => {
     const [loginOpen, setLoginOpen] = useState(false);
     const [signupOpen, setSignupOpen] = useState(false);
+
+    const [loginError, setLoginError] = useState('');
 
     const openLoginModal = () => {
         setLoginOpen(true);
@@ -27,6 +30,15 @@ const Navbar = () => {
         setSignupOpen(false);
     };
 
+    const onLoginRequested = async (loginData) => {
+        try {
+          await AuthFunction(loginData);
+        } catch (e) {
+          setLoginError(e.toString());
+          console.error("Login error:", e);
+        }
+      };
+
     return (
         <div className="sticky top-0 flex justify-center items-center">
             <div className="w-2/3">
@@ -43,7 +55,7 @@ const Navbar = () => {
 
                 </React.Fragment>
             </div>
-            <LoginModal open={loginOpen} onClose={closeLoginModal} onSignup={openSignupModal} />
+            <LoginModal open={loginOpen} onClose={closeLoginModal} onSignup={openSignupModal} onLoginRequested={onLoginRequested} loginError={loginError} setLoginError={setLoginError} />
             <SignupModal open={signupOpen} onClose={closeSignupModal} onLogin={openLoginModal} />
         </div>
     );

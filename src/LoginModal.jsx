@@ -36,16 +36,33 @@ const OVERLAY_STYLES = {
   backdropFilter: 'blur(8px)',
   zIndex: 1000
 }
+const errorStyles = {
+  padding: '15px 0',
+  fontSize: '13px',
+  color: 'red',
+};
 
 LoginModal.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   children: PropTypes.node,
-  onSignup: PropTypes.func.isRequired
+  onSignup: PropTypes.func.isRequired,
+  onLoginRequested: PropTypes.func,
+  loginError: PropTypes.string,
+  clearLoginError: PropTypes.func,
+  setLoginError: PropTypes.func
 };
 
-export default function LoginModal({ open, children, onClose, onSignup }) {
+export default function LoginModal({ open, children, onClose, onSignup, onLoginRequested, loginError, setLoginError }) {
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
+
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const onKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleLogin();
+    }
+  }
 
   useEffect(() => {
     const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -54,15 +71,39 @@ export default function LoginModal({ open, children, onClose, onSignup }) {
     return () => mediaQueryList.removeEventListener('change', handleResize);
   }, []);
 
+  useEffect(() => {
+    if (!open) {
+      // Reset username and password when modal closes
+      setUsername('');
+      setPassword('');
+      setLoginError('');
+    }
+  }, [open]);
+
   if (!open) return null
 
   const MODAL_STYLES = getModalStyles(isDesktop);
+
+  const handleLogin = async () => {
+    console.log("Logging in with username:", username);
+    console.log("Logging in with password:", password);
+
+    try {
+      await onLoginRequested({ username, password });
+      if (!loginError) {
+        console.log("Successfully login");
+      }
+    } catch (e) {
+      setLoginError(e.toString());
+      console.error("Login error:", e);
+    }
+  };
 
   return ReactDom.createPortal(
     <>
       <div style={OVERLAY_STYLES} />
       <div style={MODAL_STYLES}>
-        <CancelIcon onClick={onClose} sx={{color: "#444444"}} style={{ cursor: 'pointer', marginLeft: 'auto' }} />
+        <CancelIcon onClick={onClose} sx={{ color: "#444444" }} style={{ cursor: 'pointer', marginLeft: 'auto' }} />
         <h3 className='text-black text-5xl font-bold my-2 text-left' style={{ marginTop: '1px' }}>MANU</h3>
         {children}
         <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '3px' }}>Name</h5>
@@ -75,7 +116,8 @@ export default function LoginModal({ open, children, onClose, onSignup }) {
             marginBottom: '10px'
           }}
         >
-          <TextField fullWidth id="username" />
+          <TextField fullWidth id="username" value={username}
+            onChange={(e) => setUsername(e.target.value)} onKeyDown={onKeyDown} />
         </Box>
         <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '3px' }}>Password</h5>
         <Box
@@ -86,11 +128,13 @@ export default function LoginModal({ open, children, onClose, onSignup }) {
             marginTop: '1px'
           }}
         >
-          <TextField fullWidth id="password" />
+          <TextField fullWidth id="password" value={password}
+            onChange={(e) => setPassword(e.target.value)} onKeyDown={onKeyDown} />
         </Box>
         <h5 className='text-[#111111] text-right font-medium border-b border-black ml-auto' style={{ marginTop: '10px' }}>Forget your password</h5>
-        <div className="w-[705px] items-center justify-center mt-10 mb-0">
-          <button onClick={onClose} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded hover:text-white hover:bg-[#FFC6B4]">Login</button>
+        {loginError && <div className="error" style={errorStyles}>{loginError}</div>}
+        <div className="w-[705px] items-center justify-center mt-8 mb-0">
+          <button onClick={handleLogin} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded hover:text-white hover:bg-[#FFC6B4]">Login</button>
         </div>
         <div className='flex justify-center items-center w-full'>
           <h5 className='text-[#111111] text-center font-light' style={{ marginTop: '10px' }}>Don’t have an account?</h5>
