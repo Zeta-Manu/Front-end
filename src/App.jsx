@@ -10,12 +10,13 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Navbar />
+        
         <Routes>
             <Route index element={<Home />} />
             <Route path="/recognition" element={<Recognition />} />
             <Route path="/landing" element={<Landing />} />
         </Routes>
+        <Navbar />
       </BrowserRouter>
     </>
   )
