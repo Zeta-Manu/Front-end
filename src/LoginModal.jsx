@@ -85,11 +85,10 @@ export default function LoginModal({ open, children, onClose, onSignup, onLoginR
   const MODAL_STYLES = getModalStyles(isDesktop);
 
   const handleLogin = async () => {
-    console.log("Logging in with username:", username);
-    console.log("Logging in with password:", password);
-
     try {
       await onLoginRequested({ username, password });
+      console.log("Logging in with username:", username);
+      console.log("Logging in with password:", password);
       if (!loginError) {
         console.log("Successfully login");
       }

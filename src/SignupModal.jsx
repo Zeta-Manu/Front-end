@@ -38,16 +38,27 @@ const OVERLAY_STYLES = {
     backdropFilter: 'blur(8px)',
     zIndex: 1000
 }
+const errorStyles = {
+    padding: '15px 0',
+    fontSize: '13px',
+    color: 'red',
+};
 
 SignupModal.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     children: PropTypes.node,
-    onLogin: PropTypes.func.isRequired
+    onLogin: PropTypes.func.isRequired,
+    onRegisterRequested: PropTypes.func,
 };
 
-export default function SignupModal({ open, children, onClose, onLogin }) {
+export default function SignupModal({ open, children, onClose, onLogin, onRegisterRequested }) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
+    const [username, setUsername] = useState('')
+    const [passwordRepeat, setPasswordRepeat] = useState('');
+    const [password, setPassword] = useState('');
+    const [email, setemail] = useState('');
+    const [localRegisterError, setLocalRegisterError] = useState()
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -59,6 +70,31 @@ export default function SignupModal({ open, children, onClose, onLogin }) {
     if (!open) return null
 
     const MODAL_STYLES = getModalStyles(isDesktop);
+
+    const onRegisterTrigger = () => {
+        if (validate(passwordRepeat, password)) {
+            onRegisterRequested({ password, username, email })
+            console.log("Signup with username:", username);
+            console.log("Signup with password:", password);
+            console.log("Signup with email:", email);
+        } else {
+            setLocalRegisterError("Password entries must match")
+        }
+    }
+
+    const onKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            onRegisterTrigger()
+        }
+    }
+
+    const validate = (passwordRepeat, password) => {
+        if (passwordRepeat !== password) {
+            return false
+        } else {
+            return true;
+        }
+    }
 
     return ReactDom.createPortal(
         <>
@@ -77,7 +113,8 @@ export default function SignupModal({ open, children, onClose, onLogin }) {
                         marginBottom: '10px',
                     }}
                 >
-                    <TextField fullWidth id="username" />
+                    <TextField fullWidth id="username" onKeyDown={onKeyDown}
+                        value={username} onChange={(e) => setUsername(e.target.value)} />
                 </Box>
                 <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '3px' }}>Email</h5>
                 <Box
@@ -88,7 +125,8 @@ export default function SignupModal({ open, children, onClose, onLogin }) {
                         marginTop: '1px'
                     }}
                 >
-                    <TextField fullWidth id="email" />
+                    <TextField fullWidth id="email" onKeyDown={onKeyDown}
+                        value={email} onChange={(e) => setemail(e.target.value)} />
                 </Box>
                 <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                     <div style={{ width: 'calc(50% - 8px)', marginRight: '8px' }}>
@@ -101,7 +139,8 @@ export default function SignupModal({ open, children, onClose, onLogin }) {
                                 marginTop: '1px'
                             }}
                         >
-                            <TextField fullWidth id="password" />
+                            <TextField fullWidth id="password" onKeyDown={onKeyDown}
+                                value={password} onChange={(e) => setPassword(e.target.value)} />
                         </Box>
                     </div>
                     <div style={{ width: 'calc(50% - 8px)' }}>
@@ -114,7 +153,8 @@ export default function SignupModal({ open, children, onClose, onLogin }) {
                                 marginTop: '1px'
                             }}
                         >
-                            <TextField fullWidth id="repassword" />
+                            <TextField fullWidth id="repassword" onKeyDown={onKeyDown}
+                                value={passwordRepeat} onChange={(e) => setPasswordRepeat(e.target.value)} />
                         </Box>
                     </div>
                 </div>
@@ -134,8 +174,9 @@ export default function SignupModal({ open, children, onClose, onLogin }) {
                         </h5>
                     }
                 />
+                {localRegisterError && <div style={errorStyles}>{localRegisterError}</div>}
                 <div className="flex justify-center w-full mt-5">
-                    <button onClick={onClose} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded hover:text-white hover:bg-[#FFC6B4]">Signup</button>
+                    <button onClick={onRegisterTrigger} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded hover:text-white hover:bg-[#FFC6B4]">Signup</button>
                 </div>
                 <div className='flex justify-center items-center w-full'>
                     <h5 className='text-[#111111] text-center font-light' style={{ marginTop: '10px' }}>Already have an account? </h5>
