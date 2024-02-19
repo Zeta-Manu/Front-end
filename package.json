@@ -23,6 +23,7 @@
     "react-dom": "^18.2.0",
     "react-media-recorder": "^1.6.6",
     "react-parallax-tilt": "^1.7.172",
+    "react-responsive-modal": "^6.4.2",
     "react-router-dom": "^6.17.0",
     "react-vanilla-tilt": "^1.0.0",
     "recharts": "^2.8.0",
