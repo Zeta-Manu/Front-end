@@ -67,8 +67,6 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
         return () => mediaQueryList.removeEventListener('change', handleResize);
     }, []);
 
-    if (!open) return null
-
     const MODAL_STYLES = getModalStyles(isDesktop);
 
     const onRegisterTrigger = () => {
@@ -81,6 +79,17 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
             setLocalRegisterError("Password entries must match")
         }
     }
+
+    useEffect(() => {
+        if (!open) {
+          // Reset username and password when modal closes
+          setUsername('');
+          setPassword('');
+          setLocalRegisterError('');
+          setPasswordRepeat('');
+          setemail('');
+        }
+      }, [open]);
 
     const onKeyDown = (e) => {
         if (e.key === 'Enter') {
@@ -95,6 +104,8 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
             return true;
         }
     }
+
+    if (!open) return null
 
     return ReactDom.createPortal(
         <>

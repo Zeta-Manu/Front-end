@@ -6,10 +6,12 @@ import LanguageIcon from '@mui/icons-material/Language';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Link } from "react-router-dom";
 import { AuthFunction, registerUser } from "./FakeServiceAuth";
+import ForgetModal from "./ForgetModal";
 
 const Navbar = () => {
     const [loginOpen, setLoginOpen] = useState(false);
     const [signupOpen, setSignupOpen] = useState(false);
+    const [forgetOpen, setForgetOpen] = useState(false);
 
     const [loginError, setLoginError] = useState('');
 
@@ -28,6 +30,15 @@ const Navbar = () => {
 
     const closeSignupModal = () => {
         setSignupOpen(false);
+    };
+    const openForgetModal = () => {
+        setLoginOpen(false);
+        setForgetOpen(true); 
+    };
+
+    const closeForgetModal = () => {
+        setForgetOpen(false);
+        setLoginOpen(true);
     };
 
     const onLoginRequested = async (loginData) => {
@@ -62,8 +73,9 @@ const Navbar = () => {
 
                 </React.Fragment>
             </div>
-            <LoginModal open={loginOpen} onClose={closeLoginModal} onSignup={openSignupModal} onLoginRequested={onLoginRequested} loginError={loginError} setLoginError={setLoginError} />
+            <LoginModal open={loginOpen} onClose={closeLoginModal} onSignup={openSignupModal} onForget={openForgetModal} onLoginRequested={onLoginRequested} loginError={loginError} setLoginError={setLoginError} />
             <SignupModal open={signupOpen} onClose={closeSignupModal} onLogin={openLoginModal} onRegisterRequested={onRegisterRequested} />
+            <ForgetModal open={forgetOpen} onClose={closeForgetModal}  />
         </div>
     );
 }

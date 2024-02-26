@@ -50,10 +50,11 @@ LoginModal.propTypes = {
   onLoginRequested: PropTypes.func,
   loginError: PropTypes.string,
   clearLoginError: PropTypes.func,
-  setLoginError: PropTypes.func
+  setLoginError: PropTypes.func,
+  onForget: PropTypes.func
 };
 
-export default function LoginModal({ open, children, onClose, onSignup, onLoginRequested, loginError, setLoginError }) {
+export default function LoginModal({ open, children, onClose, onSignup, onLoginRequested, loginError, setLoginError, onForget }) {
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
 
   const [username, setUsername] = useState('')
@@ -78,7 +79,7 @@ export default function LoginModal({ open, children, onClose, onSignup, onLoginR
       setPassword('');
       setLoginError('');
     }
-  }, [open]);
+  }, [open, setLoginError]);
 
   if (!open) return null
 
@@ -130,7 +131,7 @@ export default function LoginModal({ open, children, onClose, onSignup, onLoginR
           <TextField fullWidth id="password" value={password}
             onChange={(e) => setPassword(e.target.value)} onKeyDown={onKeyDown} />
         </Box>
-        <h5 className='text-[#111111] text-right font-medium border-b border-black ml-auto' style={{ marginTop: '10px' }}>Forget your password</h5>
+        <h5 onClick={onForget} className='text-[#111111] text-right font-medium border-b border-black ml-auto' style={{ marginTop: '10px' }}>Forget your password</h5>
         {loginError && <div className="error" style={errorStyles}>{loginError}</div>}
         <div className="w-[705px] items-center justify-center mt-8 mb-0">
           <button onClick={handleLogin} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded hover:text-white hover:bg-[#FFC6B4]">Login</button>
