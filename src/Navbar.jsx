@@ -10,6 +10,7 @@ import ForgetModal from "./ForgetModal";
 import VerificationModal from "./VerificationModal";
 import ResetPasswordModal from "./ResetPasswordModal";
 import ConfirmAccountModal from "./ConfirmAccountModal";
+import logo from './assets/logo.svg'
 
 const Navbar = () => {
     const [loginOpen, setLoginOpen] = useState(false);
@@ -31,7 +32,7 @@ const Navbar = () => {
     };
     const openSignupModal = () => {
         setLoginOpen(false);
-        setSignupOpen(true); 
+        setSignupOpen(true);
     };
 
     const closeSignupModal = () => {
@@ -39,7 +40,7 @@ const Navbar = () => {
     };
     const openForgetModal = () => {
         setLoginOpen(false);
-        setForgetOpen(true); 
+        setForgetOpen(true);
     };
 
     const closeForgetModal = () => {
@@ -50,7 +51,7 @@ const Navbar = () => {
     const openVerificationModal = () => {
         setForgetOpen(false);
         setVerificationOpen(true);
-       
+
     };
 
     const closeVerificationModal = () => {
@@ -77,17 +78,17 @@ const Navbar = () => {
 
     const onLoginRequested = async (loginData) => {
         try {
-          await AuthFunction(loginData);
+            await AuthFunction(loginData);
         } catch (e) {
-          setLoginError(e.toString());
-          console.error("Login error:", e);
+            setLoginError(e.toString());
+            console.error("Login error:", e);
         }
-      };
-      const onRegisterRequested = async (registerData) => {
+    };
+    const onRegisterRequested = async (registerData) => {
         try {
-          await registerUser(registerData);
+            await registerUser(registerData);
         } catch (e) {
-          console.error("Registration error:", e);
+            console.error("Registration error:", e);
         }
     };
 
@@ -95,13 +96,18 @@ const Navbar = () => {
         <div className="sticky top-0 flex justify-center items-center">
             <div className="w-2/3">
                 <React.Fragment>
-                    <AppBar sx={{ background: "#063970", boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}>
+                    <AppBar sx={{ background: "#C5DFE7", boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}>
                         <Toolbar>
-                            <button className="text-xl text-white font-nunito-sans mx-2 z-20">Manu</button>
-                            <LanguageIcon sx={{ marginLeft: 'auto' }} />
-                            <Link to="/"><Typography sx={{ marginLeft: '15px' }}>Home</Typography></Link>
-                            <Button onClick={openLoginModal} variant="contained" sx={{ marginLeft: '15px' }}>Login</Button>
-                            <SettingsIcon sx={{ marginLeft: '15px' }} />
+                            <img src={logo} alt="Logo" style={{ width: '45px', height: '45px', marginLeft: '8px' }} />
+                            <button className="text-xl text-black font-nunito-sans mx-2 z-20">Manu</button>
+                            <LanguageIcon sx={{ marginLeft: 'auto', color: '#808080' }} />
+                            <Link to="/"><Typography sx={{ marginLeft: '15px', color: 'black' }}>Home</Typography></Link>
+                            <Button onClick={openLoginModal} variant="contained" sx={{
+                                marginLeft: '15px', backgroundColor: '#BCFDE7', color: 'black', '&:hover': {
+                                    color: 'white',
+                                },
+                            }}>Login</Button>
+                            <SettingsIcon sx={{ marginLeft: '15px', color: '#808080' }} />
                         </Toolbar>
                     </AppBar>
 
@@ -109,10 +115,10 @@ const Navbar = () => {
             </div>
             <LoginModal open={loginOpen} onClose={closeLoginModal} onSignup={openSignupModal} onForget={openForgetModal} onLoginRequested={onLoginRequested} loginError={loginError} setLoginError={setLoginError} />
             <SignupModal open={signupOpen} onClose={closeSignupModal} onLogin={openLoginModal} onRegisterRequested={onRegisterRequested} onConfirmaccount={openConfirmAccountModal} />
-            <ForgetModal open={forgetOpen} onClose={closeForgetModal}  onVerification={openVerificationModal}/>
-            <VerificationModal open={verificationOpen} onClose={closeVerificationModal} onResetpwd={openResetpasswordModal}  />
-            <ResetPasswordModal open={resetpasswordOpen} onClose={closeResetpasswordModal}  />
-            <ConfirmAccountModal open={confirmaccountOpen} onClose={closeConfirmAccountModal}  />
+            <ForgetModal open={forgetOpen} onClose={closeForgetModal} onVerification={openVerificationModal} />
+            <VerificationModal open={verificationOpen} onClose={closeVerificationModal} onResetpwd={openResetpasswordModal} />
+            <ResetPasswordModal open={resetpasswordOpen} onClose={closeResetpasswordModal} />
+            <ConfirmAccountModal open={confirmaccountOpen} onClose={closeConfirmAccountModal} />
         </div>
     );
 }
