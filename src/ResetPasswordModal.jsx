@@ -37,16 +37,17 @@ const OVERLAY_STYLES = {
     zIndex: 1000
 }
 
-ForgetModal.propTypes = {
+ResetPasswordModal.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     children: PropTypes.node,
     onVerification: PropTypes.func
 };
 
-export default function ForgetModal({ open, children, onClose, onVerification }) {
+export default function ResetPasswordModal({ open, children, onClose}) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
-    const [email, setemail] = useState('');
+    const [newpwd, setnewpwd] = useState('');
+    const [confirmpwd, setconfirmpwd] = useState('');
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -65,10 +66,10 @@ export default function ForgetModal({ open, children, onClose, onVerification })
             <div style={MODAL_STYLES}>
                 <div className='relative flex w-full items-center'>
                     <ArrowBackIosNewIcon onClick={onClose} className='absolute top-1/2 left-4 transform -translate-y-1/2' style={{ cursor: 'pointer' }} />
-                    <h4 className='text-black text-center text-4xl font-bold my-2 w-full'>Forget Password</h4>
+                    <h4 className='text-black text-center text-4xl font-bold my-2 w-full'>Reset Password</h4>
                 </div>
                 {children}
-                <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '12px' }}>Email</h5>
+                <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '12px' }}>Enter New Password</h5>
                 <Box
                     sx={{
                         width: '710px',
@@ -78,12 +79,24 @@ export default function ForgetModal({ open, children, onClose, onVerification })
                         marginBottom: '10px',
                     }}
                 >
-                    <TextField fullWidth id="email"
-                        value={email} onChange={(e) => setemail(e.target.value)} />
+                    <TextField fullWidth id="newpwd"
+                        value={newpwd} onChange={(e) => setnewpwd(e.target.value)} />
                 </Box>
-                <h5 onClick={onClose} className='text-[#111111] text-right font-medium border-b border-black ml-auto' style={{ marginTop: '10px' }}>Back to Login</h5>
+                <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '12px' }}>Confirm Password</h5>
+                <Box
+                    sx={{
+                        width: '710px',
+                        maxWidth: '100%',
+                        borderRadius: '12px',
+                        marginTop: '1px',
+                        marginBottom: '10px',
+                    }}
+                >
+                    <TextField fullWidth id="confirmpwd"
+                        value={confirmpwd} onChange={(e) => setconfirmpwd(e.target.value)} />
+                </Box>
                 <div className="flex justify-center w-full mt-5">
-                    <button onClick={onVerification} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Send</button>
+                    <button className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Send</button>
                 </div>
 
             </div>

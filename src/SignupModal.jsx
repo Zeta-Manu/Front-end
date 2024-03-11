@@ -50,9 +50,10 @@ SignupModal.propTypes = {
     children: PropTypes.node,
     onLogin: PropTypes.func.isRequired,
     onRegisterRequested: PropTypes.func,
+    onConfirmaccount: PropTypes.func
 };
 
-export default function SignupModal({ open, children, onClose, onLogin, onRegisterRequested }) {
+export default function SignupModal({ open, children, onClose, onLogin, onRegisterRequested, onConfirmaccount }) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
     const [username, setUsername] = useState('')
     const [passwordRepeat, setPasswordRepeat] = useState('');
@@ -75,6 +76,9 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
             console.log("Signup with username:", username);
             console.log("Signup with password:", password);
             console.log("Signup with email:", email);
+            if (!localRegisterError) {
+                onConfirmaccount();
+            }
         } else {
             setLocalRegisterError("Password entries must match")
         }

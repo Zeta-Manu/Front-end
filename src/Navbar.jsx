@@ -7,11 +7,17 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import { Link } from "react-router-dom";
 import { AuthFunction, registerUser } from "./FakeServiceAuth";
 import ForgetModal from "./ForgetModal";
+import VerificationModal from "./VerificationModal";
+import ResetPasswordModal from "./ResetPasswordModal";
+import ConfirmAccountModal from "./ConfirmAccountModal";
 
 const Navbar = () => {
     const [loginOpen, setLoginOpen] = useState(false);
     const [signupOpen, setSignupOpen] = useState(false);
     const [forgetOpen, setForgetOpen] = useState(false);
+    const [verificationOpen, setVerificationOpen] = useState(false);
+    const [resetpasswordOpen, setResetpasswordOpen] = useState(false);
+    const [confirmaccountOpen, setConfirmaccountOpen] = useState(false);
 
     const [loginError, setLoginError] = useState('');
 
@@ -39,6 +45,34 @@ const Navbar = () => {
     const closeForgetModal = () => {
         setForgetOpen(false);
         setLoginOpen(true);
+    };
+
+    const openVerificationModal = () => {
+        setForgetOpen(false);
+        setVerificationOpen(true);
+       
+    };
+
+    const closeVerificationModal = () => {
+        setVerificationOpen(false);
+        setForgetOpen(true);
+    };
+
+    const openResetpasswordModal = () => {
+        setVerificationOpen(false);
+        setResetpasswordOpen(true);
+    };
+    const closeResetpasswordModal = () => {
+        setResetpasswordOpen(false);
+        setVerificationOpen(true);
+    };
+    const openConfirmAccountModal = () => {
+        setSignupOpen(false);
+        setConfirmaccountOpen(true);
+    };
+    const closeConfirmAccountModal = () => {
+        setConfirmaccountOpen(false);
+        setSignupOpen(true);
     };
 
     const onLoginRequested = async (loginData) => {
@@ -74,8 +108,11 @@ const Navbar = () => {
                 </React.Fragment>
             </div>
             <LoginModal open={loginOpen} onClose={closeLoginModal} onSignup={openSignupModal} onForget={openForgetModal} onLoginRequested={onLoginRequested} loginError={loginError} setLoginError={setLoginError} />
-            <SignupModal open={signupOpen} onClose={closeSignupModal} onLogin={openLoginModal} onRegisterRequested={onRegisterRequested} />
-            <ForgetModal open={forgetOpen} onClose={closeForgetModal}  />
+            <SignupModal open={signupOpen} onClose={closeSignupModal} onLogin={openLoginModal} onRegisterRequested={onRegisterRequested} onConfirmaccount={openConfirmAccountModal} />
+            <ForgetModal open={forgetOpen} onClose={closeForgetModal}  onVerification={openVerificationModal}/>
+            <VerificationModal open={verificationOpen} onClose={closeVerificationModal} onResetpwd={openResetpasswordModal}  />
+            <ResetPasswordModal open={resetpasswordOpen} onClose={closeResetpasswordModal}  />
+            <ConfirmAccountModal open={confirmaccountOpen} onClose={closeConfirmAccountModal}  />
         </div>
     );
 }

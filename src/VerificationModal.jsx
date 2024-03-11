@@ -37,16 +37,16 @@ const OVERLAY_STYLES = {
     zIndex: 1000
 }
 
-ForgetModal.propTypes = {
+VerificationModal.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     children: PropTypes.node,
-    onVerification: PropTypes.func
+    onResetpwd: PropTypes.func
 };
 
-export default function ForgetModal({ open, children, onClose, onVerification }) {
+export default function VerificationModal({ open, children, onClose, onResetpwd }) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
-    const [email, setemail] = useState('');
+    const [verificationcode, setVerificationcode] = useState('');
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -65,10 +65,11 @@ export default function ForgetModal({ open, children, onClose, onVerification })
             <div style={MODAL_STYLES}>
                 <div className='relative flex w-full items-center'>
                     <ArrowBackIosNewIcon onClick={onClose} className='absolute top-1/2 left-4 transform -translate-y-1/2' style={{ cursor: 'pointer' }} />
-                    <h4 className='text-black text-center text-4xl font-bold my-2 w-full'>Forget Password</h4>
+                    <h4 className='text-black text-center text-4xl font-bold my-2 w-full'>Verification</h4>
                 </div>
                 {children}
-                <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '12px' }}>Email</h5>
+                <h5 className='text-[#A3A3A3] text-left font-normal' style={{ marginTop: '10px' }}>A verification code has been sent to your email.</h5>
+                <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '12px' }}>Enter Verification Code</h5>
                 <Box
                     sx={{
                         width: '710px',
@@ -78,12 +79,16 @@ export default function ForgetModal({ open, children, onClose, onVerification })
                         marginBottom: '10px',
                     }}
                 >
-                    <TextField fullWidth id="email"
-                        value={email} onChange={(e) => setemail(e.target.value)} />
+                    <TextField fullWidth id="verificationcode"
+                        value={verificationcode} onChange={(e) => setVerificationcode(e.target.value)} />
                 </Box>
-                <h5 onClick={onClose} className='text-[#111111] text-right font-medium border-b border-black ml-auto' style={{ marginTop: '10px' }}>Back to Login</h5>
+                <h5 onClick={onClose} className='text-[#111111] text-right ml-auto' style={{ marginTop: '10px' }}>
+                    <span className='font-normal'>If you did not receive a code!</span>
+                    {' '}
+                    <span className='font-semibold border-b border-black '>Resend</span>
+                </h5>
                 <div className="flex justify-center w-full mt-5">
-                    <button onClick={onVerification} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Send</button>
+                    <button onClick={onResetpwd} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Send</button>
                 </div>
 
             </div>
