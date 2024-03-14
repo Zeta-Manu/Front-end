@@ -10,7 +10,7 @@ const Home = () => {
                 imageSrc={recognition_icon}
                 title="Translation"
                 description="What do you want?"
-                to="/recognition"
+                to="/translation"
             />
             <Manucard
                 imageSrc={learn_icon}
