@@ -5,6 +5,7 @@ import Recognition from './Recognition'
 import Home from './Home';
 import Landing from './Landing';
 import Translation from './Translation';
+import Prediction from './Prediction';
 
 function App() {
 
@@ -17,6 +18,7 @@ function App() {
             <Route path="/recognition" element={<Recognition />} />
             <Route path="/landing" element={<Landing />} />
             <Route path="/translation" element={<Translation />} />
+            <Route path="/prediction" element={<Prediction />} />
 
         </Routes>
         <Navbar />
