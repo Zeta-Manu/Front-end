@@ -30,7 +30,7 @@ const Prediction = () => {
     const webcamRef = useRef(null);
     const [streamActive, setStreamActive] = useState(false);
     const { startRecording, stopRecording, mediaBlobUrl } =
-        useReactMediaRecorder({ audio: false, video: true }); //status
+        useReactMediaRecorder({ audio: false, video: true, type: "video/mp4" }); //status
     const [showRecordedVideo, setShowRecordedVideo] = useState(false);
     /*const [recordBlobUrl, setRecordBlobUrl] = useState(null);*/
     const confident = 100; //from backend
