@@ -34,7 +34,7 @@ const Prediction = () => {
     const [showRecordedVideo, setShowRecordedVideo] = useState(false);
     /*const [recordBlobUrl, setRecordBlobUrl] = useState(null);*/
     const confident = 100; //from backend
-    const [isRecording, setIsRecording] = useState(false);
+    const [awaitUpload, setAwaitUpload] = useState(false);
 
     const handleStream = async () => {
         setStreamActive((prevState) => !prevState);
@@ -67,7 +67,7 @@ const Prediction = () => {
         try {
             await startRecording();
             console.log('Recording started');
-            setIsRecording(true);
+            setAwaitUpload(true);
         } catch (error) {
             console.error('Error starting recording', error);
         }
@@ -94,7 +94,7 @@ const Prediction = () => {
         try {
             await stopRecording();
             console.log('Recording stopped, blob:', mediaBlobUrl);
-            setIsRecording(false);
+            setAwaitUpload(false);
             // uploadVideo(mediaBlobUrl);
             // downloadBlob(mediaBlobUrl);
         } catch (error) {
@@ -103,12 +103,12 @@ const Prediction = () => {
     };
 
     useEffect(() => {
-        if (!isRecording && mediaBlobUrl != undefined) {
+        if (!awaitUpload && mediaBlobUrl != undefined) {
             console.log(mediaBlobUrl, "something occured with medialBlobUrl")
             uploadVideo(mediaBlobUrl);
             downloadBlob(mediaBlobUrl);
         }
-    }, [mediaBlobUrl, isRecording])
+    }, [mediaBlobUrl, awaitUpload])
 
     const uploadVideo = async (blobUrl) => {
         try {
