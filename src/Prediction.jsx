@@ -34,6 +34,7 @@ const Prediction = () => {
     const [showRecordedVideo, setShowRecordedVideo] = useState(false);
     /*const [recordBlobUrl, setRecordBlobUrl] = useState(null);*/
     const confident = 100; //from backend
+    const [isRecording, setIsRecording] = useState(false);
 
     const handleStream = async () => {
         setStreamActive((prevState) => !prevState);
@@ -66,6 +67,7 @@ const Prediction = () => {
         try {
             await startRecording();
             console.log('Recording started');
+            setIsRecording(true);
         } catch (error) {
             console.error('Error starting recording', error);
         }
@@ -87,16 +89,26 @@ const Prediction = () => {
             console.error('Error stopping recording', error);
         }
     };*/
+
     const handleStopRecording = async () => {
         try {
             await stopRecording();
             console.log('Recording stopped, blob:', mediaBlobUrl);
-            uploadVideo(mediaBlobUrl);
-            downloadBlob(mediaBlobUrl);
+            setIsRecording(false);
+            // uploadVideo(mediaBlobUrl);
+            // downloadBlob(mediaBlobUrl);
         } catch (error) {
             console.error('Error stopping recording', error);
         }
     };
+
+    useEffect(() => {
+        if (!isRecording && mediaBlobUrl != undefined) {
+            console.log(mediaBlobUrl, "something occured with medialBlobUrl")
+            uploadVideo(mediaBlobUrl);
+            downloadBlob(mediaBlobUrl);
+        }
+    }, [mediaBlobUrl, isRecording])
 
     const uploadVideo = async (blobUrl) => {
         try {
@@ -143,21 +155,21 @@ const Prediction = () => {
     const getColor = (confident) => {
         let opacity;
         if (confident < 50) {
-          opacity = (confident - 1) / 49;
-          opacity = 1 - opacity;
-          opacity = Math.max(opacity, 0.3);
-          return `rgba(255, 0, 0, ${opacity})`; // Red=>inverse opacity
+            opacity = (confident - 1) / 49;
+            opacity = 1 - opacity;
+            opacity = Math.max(opacity, 0.3);
+            return `rgba(255, 0, 0, ${opacity})`; // Red=>inverse opacity
         } else if (confident >= 50 && confident <= 60) {
-          opacity = (confident - 50) / 10;
-          opacity = Math.max(opacity, 0.5);
-          return `rgba(255, 204, 0, ${opacity})`; // Yellow
+            opacity = (confident - 50) / 10;
+            opacity = Math.max(opacity, 0.5);
+            return `rgba(255, 204, 0, ${opacity})`; // Yellow
         } else {//61=>100
-          opacity = (confident - 60) / 40;
-          opacity = Math.max(opacity, 0.5);
-          return `rgba(0, 255, 0, ${opacity})`; // Green
+            opacity = (confident - 60) / 40;
+            opacity = Math.max(opacity, 0.5);
+            return `rgba(0, 255, 0, ${opacity})`; // Green
         }
-      }
-    
+    }
+
 
     return (
         <div className="flex w-screen h-screen">
