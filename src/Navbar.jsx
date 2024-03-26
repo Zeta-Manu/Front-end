@@ -5,7 +5,7 @@ import { AppBar, Toolbar, Button, Typography } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Link } from "react-router-dom";
-import { AuthFunction, registerUser } from "./FakeServiceAuth";
+import { AuthFunction } from "./FakeServiceAuth";
 import ForgetModal from "./ForgetModal";
 import VerificationModal from "./VerificationModal";
 import ResetPasswordModal from "./ResetPasswordModal";
@@ -19,6 +19,7 @@ const Navbar = () => {
     const [verificationOpen, setVerificationOpen] = useState(false);
     const [resetpasswordOpen, setResetpasswordOpen] = useState(false);
     const [confirmaccountOpen, setConfirmaccountOpen] = useState(false);
+    const [externalRegisterError, setExternalRegisterError] = useState();
 
     const [loginError, setLoginError] = useState('');
 
@@ -80,17 +81,59 @@ const Navbar = () => {
         try {
             await AuthFunction(loginData);
         } catch (e) {
-            setLoginError(e.toString());
+            setExternalRegisterError(e.toString());
             console.error("Login error:", e);
         }
     };
     const onRegisterRequested = async (registerData) => {
+        const { email, username, password } = registerData;
         try {
-            await registerUser(registerData);
+            const response = await registerReqUser(email, username, password);
+            if (response.status === 200) {
+                // Registration successful
+                setExternalRegisterError(null);
+            } else if (response.status === 400) {
+                // Invalid Password or Invalid Parameter
+                setExternalRegisterError('Invalid Password or Invalid Parameter');
+            } else if (response.status === 409) {
+                // Username Exists
+                setExternalRegisterError('Username Exists');
+            } else if (response.status === 500) {
+                // Internal Server Error
+                setExternalRegisterError('Internal Server Error');
+            } else {
+                setExternalRegisterError('Registration failed');
+            }
         } catch (e) {
             console.error("Registration error:", e);
+            setExternalRegisterError('Registration failed');
         }
     };
+
+    const registerReqUser = async (email, name, password) => {
+
+        const registerData = {
+            email: email,
+            name: name,
+            password: password
+        };
+
+        try {
+            const response = await fetch('http://localhost:8080/api/v2/signup', {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(registerData),
+            });
+            return response;
+        } catch (error) {
+            console.error('Registration error:', error);
+            throw error;
+        }
+    };
+
 
     return (
         <div className="sticky top-0 flex justify-center items-center">
@@ -114,7 +157,7 @@ const Navbar = () => {
                 </React.Fragment>
             </div>
             <LoginModal open={loginOpen} onClose={closeLoginModal} onSignup={openSignupModal} onForget={openForgetModal} onLoginRequested={onLoginRequested} loginError={loginError} setLoginError={setLoginError} />
-            <SignupModal open={signupOpen} onClose={closeSignupModal} onLogin={openLoginModal} onRegisterRequested={onRegisterRequested} onConfirmaccount={openConfirmAccountModal} />
+            <SignupModal open={signupOpen} onClose={closeSignupModal} onLogin={openLoginModal} onRegisterRequested={onRegisterRequested} onConfirmaccount={openConfirmAccountModal} externalRegisterError={externalRegisterError}/>
             <ForgetModal open={forgetOpen} onClose={closeForgetModal} onVerification={openVerificationModal} />
             <VerificationModal open={verificationOpen} onClose={closeVerificationModal} onResetpwd={openResetpasswordModal} />
             <ResetPasswordModal open={resetpasswordOpen} onClose={closeResetpasswordModal} />

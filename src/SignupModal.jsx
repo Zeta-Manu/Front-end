@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import ReactDom from 'react-dom'
 import PropTypes from 'prop-types';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -50,10 +50,11 @@ SignupModal.propTypes = {
     children: PropTypes.node,
     onLogin: PropTypes.func.isRequired,
     onRegisterRequested: PropTypes.func,
-    onConfirmaccount: PropTypes.func
+    onConfirmaccount: PropTypes.func,
+    externalRegisterError: PropTypes.string,
 };
 
-export default function SignupModal({ open, children, onClose, onLogin, onRegisterRequested, onConfirmaccount }) {
+export default function SignupModal({ open, children, onClose, onLogin, onRegisterRequested, onConfirmaccount, externalRegisterError }) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
     const [username, setUsername] = useState('')
     const [passwordRepeat, setPasswordRepeat] = useState('');
@@ -70,30 +71,30 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
 
     const MODAL_STYLES = getModalStyles(isDesktop);
 
-    const onRegisterTrigger = () => {
+    const onRegisterTrigger = useCallback(() => {
         if (validate(passwordRepeat, password)) {
             onRegisterRequested({ password, username, email })
             console.log("Signup with username:", username);
             console.log("Signup with password:", password);
             console.log("Signup with email:", email);
-            if (!localRegisterError) {
-                onConfirmaccount();
-            }
         } else {
-            setLocalRegisterError("Password entries must match")
+            return;
         }
-    }
+        if (localRegisterError === null && externalRegisterError === null) {
+            onConfirmaccount();
+        }
+    }, [passwordRepeat, password, username, email, localRegisterError, externalRegisterError, onRegisterRequested, onConfirmaccount]);
 
     useEffect(() => {
         if (!open) {
-          // Reset username and password when modal closes
-          setUsername('');
-          setPassword('');
-          setLocalRegisterError('');
-          setPasswordRepeat('');
-          setemail('');
+            // Reset username and password when modal closes
+            setUsername('');
+            setPassword('');
+            setLocalRegisterError();
+            setPasswordRepeat('');
+            setemail('');
         }
-      }, [open]);
+    }, [open]);
 
     const onKeyDown = (e) => {
         if (e.key === 'Enter') {
@@ -103,8 +104,25 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
 
     const validate = (passwordRepeat, password) => {
         if (passwordRepeat !== password) {
-            return false
-        } else {
+            setLocalRegisterError("Password entries must match")
+            return false;
+        } else if(password.length < 8){ //min length 8 char
+            setLocalRegisterError("Password must contain at least 8 characters")
+            return false;
+        }else if (!/\d/.test(password)) { //not contain number
+            setLocalRegisterError("Password must contain at least 1 number")
+            return false;
+        }else if(!/[!@#$%^&*]/.test(password)){ //not contain special char
+            setLocalRegisterError("Password must contain at least 1 specific character")
+            return false;
+        } else if(!/[A-Z]/.test(password)){ //no uppercase
+            setLocalRegisterError("Password must contain at least 1 uppercase letter")
+            return false;
+        }else if(!/[a-z]/.test(password)){ //no lowercase
+            setLocalRegisterError("Password must contain at least 1 lowercase letter")
+            return false;
+        }else {
+            setLocalRegisterError(null);
             return true;
         }
     }
@@ -114,7 +132,7 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
     return ReactDom.createPortal(
         <>
             <div style={OVERLAY_STYLES} />
-            <div style={MODAL_STYLES}>
+            <div key={localRegisterError} style={MODAL_STYLES}>
                 <CancelIcon onClick={onClose} sx={{ color: "#444444" }} style={{ cursor: 'pointer', marginLeft: 'auto' }} />
                 <h3 className='text-black text-5xl font-bold my-2 text-left' style={{ marginTop: '1px' }}>MANU</h3>
                 {children}
@@ -197,6 +215,12 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
                     <h5 className='text-[#111111] text-center font-light' style={{ marginTop: '10px' }}>Already have an account? </h5>
                     <h5 onClick={onLogin} className='text-[#111111] text-center font-semibold border-b border-black ml-2' style={{ marginTop: '10px' }}>Login</h5>
                 </div>
+                {/* <div style={errorStyles}>Contains at least 1 number</div>
+                <div style={errorStyles}>Contains at least 1 specific character</div>
+                <div style={errorStyles}>Contains at least 1 uppercase letter</div>
+                <div style={errorStyles}>Contains at least 1 lowercase letter</div>
+                */}
+
 
             </div>
         </>,
