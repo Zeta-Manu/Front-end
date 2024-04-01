@@ -40,10 +40,11 @@ const OVERLAY_STYLES = {
 ConfirmAccountModal.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    children: PropTypes.node
+    children: PropTypes.node,
+    email: PropTypes.string.isRequired
 };
 
-export default function ConfirmAccountModal({ open, children, onClose}) {
+export default function ConfirmAccountModal({ open, children, onClose, email}) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
     const [verificationcode, setVerificationcode] = useState('');
 
@@ -55,6 +56,27 @@ export default function ConfirmAccountModal({ open, children, onClose}) {
     }, []);
 
     const MODAL_STYLES = getModalStyles(isDesktop);
+
+    const sendVerificationCode= async (verificationcode, email) => {
+        const confirmationData = {
+            confirmation_code: verificationcode,
+            email: email
+        };
+        try {
+            const response = await fetch('http://localhost:8080/api/v2/confirm', {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(confirmationData),
+            });
+            return response;
+        } catch (error) {
+            console.error('Registration error:', error);
+            throw error;
+        }
+    }
 
     if (!open) return null
 
@@ -87,7 +109,7 @@ export default function ConfirmAccountModal({ open, children, onClose}) {
                     <span className='font-semibold border-b border-black '>Resend</span>
                 </h5>
                 <div className="flex justify-center w-full mt-5">
-                    <button className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Confirm</button>
+                    <button onClick={() => sendVerificationCode(verificationcode, email)} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Confirm</button>
                 </div>
 
             </div>

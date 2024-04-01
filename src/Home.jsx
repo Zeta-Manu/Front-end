@@ -16,7 +16,7 @@ const Home = () => {
                 imageSrc={learn_icon}
                 title="Learn"
                 description="Start communicating with Sign Language now!"
-                to="/recognition"
+                to="/learning"
             />
             <Manucard
                 imageSrc={stat_icon}

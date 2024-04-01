@@ -6,6 +6,7 @@ import Home from './Home';
 import Landing from './Landing';
 import Translation from './Translation';
 import Prediction from './Prediction';
+import Learning from './Learning';
 
 function App() {
 
@@ -19,6 +20,7 @@ function App() {
             <Route path="/landing" element={<Landing />} />
             <Route path="/translation" element={<Translation />} />
             <Route path="/prediction" element={<Prediction />} />
+            <Route path="/learning" element={<Learning />} />
 
         </Routes>
         <Navbar />

@@ -50,11 +50,11 @@ SignupModal.propTypes = {
     children: PropTypes.node,
     onLogin: PropTypes.func.isRequired,
     onRegisterRequested: PropTypes.func,
-    onConfirmaccount: PropTypes.func,
+    openConfirmAccountModal: PropTypes.func,
     externalRegisterError: PropTypes.string,
 };
 
-export default function SignupModal({ open, children, onClose, onLogin, onRegisterRequested, onConfirmaccount, externalRegisterError }) {
+export default function SignupModal({ open, children, onClose, onLogin, onRegisterRequested, openConfirmAccountModal, externalRegisterError }) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
     const [username, setUsername] = useState('')
     const [passwordRepeat, setPasswordRepeat] = useState('');
@@ -71,7 +71,7 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
 
     const MODAL_STYLES = getModalStyles(isDesktop);
 
-    const onRegisterTrigger = useCallback(() => {
+    const onRegisterTrigger = useCallback(async () => {
         if (validate(passwordRepeat, password)) {
             onRegisterRequested({ password, username, email })
             console.log("Signup with username:", username);
@@ -80,10 +80,15 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
         } else {
             return;
         }
+
         if (localRegisterError === null && externalRegisterError === null) {
-            onConfirmaccount();
+            try {
+                await openConfirmAccountModal(email);
+            } catch (error) {
+                console.error('Error opening confirm account modal:', error);
+            }
         }
-    }, [passwordRepeat, password, username, email, localRegisterError, externalRegisterError, onRegisterRequested, onConfirmaccount]);
+    }, [passwordRepeat, password, username, email, localRegisterError, externalRegisterError, onRegisterRequested, openConfirmAccountModal]);
 
     useEffect(() => {
         if (!open) {

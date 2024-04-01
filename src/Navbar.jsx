@@ -20,6 +20,7 @@ const Navbar = () => {
     const [resetpasswordOpen, setResetpasswordOpen] = useState(false);
     const [confirmaccountOpen, setConfirmaccountOpen] = useState(false);
     const [externalRegisterError, setExternalRegisterError] = useState();
+    const [confirmAccountEmail, setConfirmAccountEmail] = useState('');
 
     const [loginError, setLoginError] = useState('');
 
@@ -68,9 +69,10 @@ const Navbar = () => {
         setResetpasswordOpen(false);
         setVerificationOpen(true);
     };
-    const openConfirmAccountModal = () => {
+    const openConfirmAccountModal = (email) => {
         setSignupOpen(false);
         setConfirmaccountOpen(true);
+        setConfirmAccountEmail(email); //pass email to confirmAccount modal
     };
     const closeConfirmAccountModal = () => {
         setConfirmaccountOpen(false);
@@ -142,7 +144,7 @@ const Navbar = () => {
                     <AppBar sx={{ background: "#C5DFE7", boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}>
                         <Toolbar>
                             <img src={logo} alt="Logo" style={{ width: '45px', height: '45px', marginLeft: '8px' }} />
-                            <button className="text-xl text-black font-nunito-sans mx-2 z-20">Manu</button>
+                            <Link to="/landing"><button className="text-xl text-black font-nunito-sans mx-2 z-20">Manu</button></Link>
                             <LanguageIcon sx={{ marginLeft: 'auto', color: '#808080' }} />
                             <Link to="/"><Typography sx={{ marginLeft: '15px', color: 'black' }}>Home</Typography></Link>
                             <Button onClick={openLoginModal} variant="contained" sx={{
@@ -157,11 +159,11 @@ const Navbar = () => {
                 </React.Fragment>
             </div>
             <LoginModal open={loginOpen} onClose={closeLoginModal} onSignup={openSignupModal} onForget={openForgetModal} onLoginRequested={onLoginRequested} loginError={loginError} setLoginError={setLoginError} />
-            <SignupModal open={signupOpen} onClose={closeSignupModal} onLogin={openLoginModal} onRegisterRequested={onRegisterRequested} onConfirmaccount={openConfirmAccountModal} externalRegisterError={externalRegisterError}/>
+            <SignupModal open={signupOpen} onClose={closeSignupModal} onLogin={openLoginModal} onRegisterRequested={onRegisterRequested} openConfirmAccountModal={openConfirmAccountModal} externalRegisterError={externalRegisterError}/>
             <ForgetModal open={forgetOpen} onClose={closeForgetModal} onVerification={openVerificationModal} />
             <VerificationModal open={verificationOpen} onClose={closeVerificationModal} onResetpwd={openResetpasswordModal} />
             <ResetPasswordModal open={resetpasswordOpen} onClose={closeResetpasswordModal} />
-            <ConfirmAccountModal open={confirmaccountOpen} onClose={closeConfirmAccountModal} />
+            <ConfirmAccountModal open={confirmaccountOpen} onClose={closeConfirmAccountModal} email={confirmAccountEmail} />
         </div>
     );
 }
