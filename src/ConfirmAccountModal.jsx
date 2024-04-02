@@ -85,6 +85,7 @@ export default function ConfirmAccountModal({ open, children, onClose, email, on
             if (response.ok) {
                 // Account confirmed successfully=>open login modal
                 onConfirmtoLogin();
+                console.log('confirm account success')
             } else if (response.status === 400) {
                 setError('Verification code is incorrect.');
             } else if (response.status === 408) {

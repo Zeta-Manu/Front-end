@@ -5,7 +5,6 @@ import { AppBar, Toolbar, Button, Typography } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import SettingsIcon from '@mui/icons-material/Settings';
 import { Link } from "react-router-dom";
-import { AuthFunction } from "./FakeServiceAuth";
 import ForgetModal from "./ForgetModal";
 import VerificationModal from "./VerificationModal";
 import ResetPasswordModal from "./ResetPasswordModal";
@@ -22,7 +21,7 @@ const Navbar = () => {
     const [externalRegisterError, setExternalRegisterError] = useState();
     const [confirmAccountEmail, setConfirmAccountEmail] = useState('');
 
-    const [loginError, setLoginError] = useState('');
+    /*const [loginError, setLoginError] = useState('');*/
 
     const openLoginModal = () => {
         setLoginOpen(true);
@@ -84,7 +83,7 @@ const Navbar = () => {
         setConfirmaccountOpen(false);
         setLoginOpen(true);
     };
-
+    /*
     const onLoginRequested = async (loginData) => {
         try {
             await AuthFunction(loginData);
@@ -93,6 +92,7 @@ const Navbar = () => {
             console.error("Login error:", e);
         }
     };
+    */
     const onRegisterRequested = async (registerData) => {
         const { email, username, password } = registerData;
         try {
@@ -164,7 +164,7 @@ const Navbar = () => {
 
                 </React.Fragment>
             </div>
-            <LoginModal open={loginOpen} onClose={closeLoginModal} onSignup={openSignupModal} onForget={openForgetModal} onLoginRequested={onLoginRequested} loginError={loginError} setLoginError={setLoginError} />
+            <LoginModal open={loginOpen} onClose={closeLoginModal} onSignup={openSignupModal} onForget={openForgetModal} />
             <SignupModal open={signupOpen} onClose={closeSignupModal} onLogin={openLoginModal} onRegisterRequested={onRegisterRequested} openConfirmAccountModal={openConfirmAccountModal} externalRegisterError={externalRegisterError}/>
             <ForgetModal open={forgetOpen} onClose={closeForgetModal} onVerification={openVerificationModal} />
             <VerificationModal open={verificationOpen} onClose={closeVerificationModal} onResetpwd={openResetpasswordModal} />

@@ -47,21 +47,19 @@ LoginModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   children: PropTypes.node,
   onSignup: PropTypes.func.isRequired,
-  onLoginRequested: PropTypes.func,
-  loginError: PropTypes.string,
-  clearLoginError: PropTypes.func,
-  setLoginError: PropTypes.func,
   onForget: PropTypes.func
 };
 
-export default function LoginModal({ open, children, onClose, onSignup, onLoginRequested, loginError, setLoginError, onForget }) {
+export default function LoginModal({ open, children, onClose, onSignup, onForget }) {
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
 
-  const [username, setUsername] = useState('')
+  const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [error, setError] = useState('');
+
   const onKeyDown = (e) => {
     if (e.key === 'Enter') {
-      handleLogin();
+      sendLoginRequest()
     }
   }
 
@@ -75,29 +73,59 @@ export default function LoginModal({ open, children, onClose, onSignup, onLoginR
   useEffect(() => {
     if (!open) {
       // Reset username and password when modal closes
-      setUsername('');
+      setEmail('');
       setPassword('');
-      setLoginError('');
     }
-  }, [open, setLoginError]);
+  }, [open]);
 
   if (!open) return null
 
   const MODAL_STYLES = getModalStyles(isDesktop);
 
-  const handleLogin = async () => {
+  const sendLoginRequest = async (email, password) => {
+    console.log("Logging in with username:", email);
+    console.log("Logging in with password:", password);
+    setError(null);
+    const loginData = {
+      email: email,
+      password: password
+    };
+
     try {
-      await onLoginRequested({ username, password });
-      console.log("Logging in with username:", username);
-      console.log("Logging in with password:", password);
-      if (!loginError) {
-        console.log("Successfully login");
+      const response = await fetch('http://localhost:8080/api/v2/login', {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(loginData)
+      });
+      if (response.ok) {
+        console.log('login successful!')
+        onClose()
+      } else if (response.status === 400) {
+        // Invalid Password or Missing Parameter
+        setError('Invalid Password or Missing Parameter');
+      } else if (response.status === 401) {
+        // Not Authorized
+        setError('Not Authorized');
+      } else if (response.status === 403) {
+        // User Not Confirm
+        setError('User Not Confirm');
+      } else if (response.status === 404) {
+        // User Not Found
+        setError('User Not Found');
+      } else if (response.status === 500) {
+        // Internal Server Error
+        setError('Internal Server Error');
+      } else {
+        setError('Unknown error');
       }
-    } catch (e) {
-      setLoginError(e.toString());
-      console.error("Login error:", e);
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
     }
-  };
+  }
 
   return ReactDom.createPortal(
     <>
@@ -106,7 +134,7 @@ export default function LoginModal({ open, children, onClose, onSignup, onLoginR
         <CancelIcon onClick={onClose} sx={{ color: "#444444" }} style={{ cursor: 'pointer', marginLeft: 'auto' }} />
         <h3 className='text-black text-5xl font-bold my-2 text-left' style={{ marginTop: '1px' }}>MANU</h3>
         {children}
-        <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '3px' }}>Name</h5>
+        <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '3px' }}>Email</h5>
         <Box
           sx={{
             width: '710px',
@@ -116,8 +144,8 @@ export default function LoginModal({ open, children, onClose, onSignup, onLoginR
             marginBottom: '10px'
           }}
         >
-          <TextField fullWidth id="username" value={username}
-            onChange={(e) => setUsername(e.target.value)} onKeyDown={onKeyDown} />
+          <TextField fullWidth id="email" value={email}
+            onChange={(e) => setEmail(e.target.value)} onKeyDown={onKeyDown} />
         </Box>
         <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '3px' }}>Password</h5>
         <Box
@@ -132,14 +160,16 @@ export default function LoginModal({ open, children, onClose, onSignup, onLoginR
             onChange={(e) => setPassword(e.target.value)} onKeyDown={onKeyDown} />
         </Box>
         <h5 onClick={onForget} className='text-[#111111] text-right font-medium border-b border-black ml-auto' style={{ marginTop: '10px' }}>Forget your password</h5>
-        {loginError && <div className="error" style={errorStyles}>{loginError}</div>}
         <div className="w-[705px] items-center justify-center mt-8 mb-0">
-          <button onClick={handleLogin} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded hover:text-white hover:bg-[#FFC6B4]">Login</button>
+          <button onClick={() => sendLoginRequest(email, password)} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded hover:text-white hover:bg-[#FFC6B4]">Login</button>
         </div>
         <div className='flex justify-center items-center w-full'>
           <h5 className='text-[#111111] text-center font-light' style={{ marginTop: '10px' }}>Don’t have an account?</h5>
           <h5 onClick={onSignup} className='text-[#111111] text-center font-semibold border-b border-black ml-2' style={{ marginTop: '10px' }}>Signup</h5>
         </div>
+        {error && (
+          <div style={errorStyles}>{error}</div>
+        )}
       </div>
     </>,
     document.getElementById('portal')
