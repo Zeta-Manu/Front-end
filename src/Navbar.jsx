@@ -79,6 +79,12 @@ const Navbar = () => {
         setSignupOpen(true);
     };
 
+
+    const onConfirmtoLogin =() => {
+        setConfirmaccountOpen(false);
+        setLoginOpen(true);
+    };
+
     const onLoginRequested = async (loginData) => {
         try {
             await AuthFunction(loginData);
@@ -163,7 +169,7 @@ const Navbar = () => {
             <ForgetModal open={forgetOpen} onClose={closeForgetModal} onVerification={openVerificationModal} />
             <VerificationModal open={verificationOpen} onClose={closeVerificationModal} onResetpwd={openResetpasswordModal} />
             <ResetPasswordModal open={resetpasswordOpen} onClose={closeResetpasswordModal} />
-            <ConfirmAccountModal open={confirmaccountOpen} onClose={closeConfirmAccountModal} email={confirmAccountEmail} />
+            <ConfirmAccountModal open={confirmaccountOpen} onClose={closeConfirmAccountModal} email={confirmAccountEmail} onConfirmtoLogin={onConfirmtoLogin}/>
         </div>
     );
 }

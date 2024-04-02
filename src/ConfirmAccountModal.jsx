@@ -37,16 +37,24 @@ const OVERLAY_STYLES = {
     zIndex: 1000
 }
 
+const errorStyles = {
+    padding: '15px 0',
+    fontSize: '13px',
+    color: 'red',
+};
+
 ConfirmAccountModal.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     children: PropTypes.node,
-    email: PropTypes.string.isRequired
+    email: PropTypes.string.isRequired,
+    onConfirmtoLogin: PropTypes.func
 };
 
-export default function ConfirmAccountModal({ open, children, onClose, email}) {
+export default function ConfirmAccountModal({ open, children, onClose, email, onConfirmtoLogin}) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
     const [verificationcode, setVerificationcode] = useState('');
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -58,6 +66,9 @@ export default function ConfirmAccountModal({ open, children, onClose, email}) {
     const MODAL_STYLES = getModalStyles(isDesktop);
 
     const sendVerificationCode= async (verificationcode, email) => {
+
+        setError(null);
+
         const confirmationData = {
             confirmation_code: verificationcode,
             email: email
@@ -71,7 +82,16 @@ export default function ConfirmAccountModal({ open, children, onClose, email}) {
                 },
                 body: JSON.stringify(confirmationData),
             });
-            return response;
+            if (response.ok) {
+                // Account confirmed successfully=>open login modal
+                onConfirmtoLogin();
+            } else if (response.status === 400) {
+                setError('Verification code is incorrect.');
+            } else if (response.status === 408) {
+                setError('Request timed out.');
+            } else {
+                setError('An unexpected error occurred. Please try again.');
+            }
         } catch (error) {
             console.error('Registration error:', error);
             throw error;
@@ -111,7 +131,9 @@ export default function ConfirmAccountModal({ open, children, onClose, email}) {
                 <div className="flex justify-center w-full mt-5">
                     <button onClick={() => sendVerificationCode(verificationcode, email)} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Confirm</button>
                 </div>
-
+                {error && (
+                    <div style={errorStyles}>{error}</div>
+                )}
             </div>
         </>,
         document.getElementById('portal')
