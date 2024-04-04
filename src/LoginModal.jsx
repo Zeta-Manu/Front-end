@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+import { useAuth } from './AuthProvider';
 
 const DESKTOP_MEDIA_QUERY = '(min-width: 768px)';
 function getModalStyles(isDesktop) {
@@ -51,6 +52,7 @@ LoginModal.propTypes = {
 };
 
 export default function LoginModal({ open, children, onClose, onSignup, onForget }) {
+  const { login } = useAuth();
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
 
   const [email, setEmail] = useState('')
@@ -102,6 +104,7 @@ export default function LoginModal({ open, children, onClose, onSignup, onForget
       });
       if (response.ok) {
         console.log('login successful!')
+        login()
         onClose()
       } else if (response.status === 400) {
         // Invalid Password or Missing Parameter
