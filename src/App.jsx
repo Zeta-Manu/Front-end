@@ -9,6 +9,7 @@ import Prediction from './Prediction';
 import Learning from './Learning';
 import { useAuth } from './AuthProvider';
 import AuthNavbar from './AuthNavbar';
+import Quiz from './Quiz';
 function App() {
   const { isLoggedIn } = useAuth() || { isLoggedIn: false };
   const location = useLocation();
@@ -24,6 +25,7 @@ function App() {
           <Route path="/translation" element={<Translation />} />
           <Route path="/prediction" element={<Prediction />} />
           <Route path="/learning" element={<Learning />} />
+          <Route path="/quiz" element={<Quiz />} />
 
         </Routes>
           {location.pathname !== '/quiz' && (isLoggedIn ? <AuthNavbar /> : <Navbar />)}
