@@ -41,7 +41,7 @@ const Quiz = () => {
                 </div>
                 <div className="flex w-full h-1/3 justify-center items-center mt-5">
                     <div className="w-1/3 h-full overflow-hidden bg-[#9EB3CD]">
-
+                        <video src="https://d3108kdhfsx9kk.cloudfront.net/lesson/filebla.mp4" autoPlay loop={true} muted playsInline/>
                     </div>
                 </div>
                 <Box

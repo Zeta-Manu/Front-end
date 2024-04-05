@@ -6,9 +6,9 @@ import { Link } from "react-router-dom";
 
 const Learning = () => {
 
-    /*const scrollToTop = () => {
+    const scrollToTop = () => {
         window.scrollTo(0, 0);
-    };*/
+      };
 
     return (
         <div className="flex-col w-screen h-screen">
@@ -43,7 +43,7 @@ const Learning = () => {
                 </div>
 
                 <div className='w-1/12 h-5/6 bg-[#5F81AD] flex rounded-2xl items-center justify-center border-solid border border-black ml-4 hover:bg-[#749CC5] shadow-lg'>
-                    <Link to="/quiz" className="w-full h-full flex items-center justify-center" style={{ textDecoration: 'none', color: 'transparent' }}>
+                    <Link to="/quiz" className="w-full h-full flex items-center justify-center" style={{ textDecoration: 'none', color: 'transparent' }} onClick={scrollToTop}>
                         <QuizIcon fontSize="large" sx={{ color: 'white' }} />
                     </Link>
                 </div>
