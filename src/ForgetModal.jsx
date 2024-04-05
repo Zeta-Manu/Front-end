@@ -36,17 +36,23 @@ const OVERLAY_STYLES = {
     backdropFilter: 'blur(8px)',
     zIndex: 1000
 }
+const errorStyles = {
+    padding: '15px 0',
+    fontSize: '13px',
+    color: 'red',
+  };
 
 ForgetModal.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     children: PropTypes.node,
-    onVerification: PropTypes.func
+    openVerificationModal: PropTypes.func
 };
 
-export default function ForgetModal({ open, children, onClose, onVerification }) {
+export default function ForgetModal({ open, children, onClose, openVerificationModal }) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
     const [email, setemail] = useState('');
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -58,6 +64,37 @@ export default function ForgetModal({ open, children, onClose, onVerification })
     const MODAL_STYLES = getModalStyles(isDesktop);
 
     if (!open) return null
+
+    const sendForgetRequest = async (email) => {
+        setError(null);
+        const forgetData = {
+            email: email
+        };
+        try {
+            const response = await fetch('http://localhost:8080/api/v2/forgot-password', {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify( forgetData )
+            });
+            if (response.ok) {
+                console.log('Forget password request sent successfully!');
+                openVerificationModal(email);
+            } else if (response.status === 400) {
+                setError("Bad Request")
+            } else if (response.status === 500) {
+                setError("Internal Server Error")
+            }
+            else {
+                setError('Unknown error');
+            }
+        } catch (error) {
+            console.error('Forget request error:', error);
+            throw error;
+        }
+    }
 
     return ReactDom.createPortal(
         <>
@@ -83,9 +120,11 @@ export default function ForgetModal({ open, children, onClose, onVerification })
                 </Box>
                 <h5 onClick={onClose} className='text-[#111111] text-right font-medium border-b border-black ml-auto' style={{ marginTop: '10px' }}>Back to Login</h5>
                 <div className="flex justify-center w-full mt-5">
-                    <button onClick={onVerification} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Send</button>
+                    <button onClick={() => sendForgetRequest(email)} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Send</button>
                 </div>
-
+                {error && (
+                    <div style={errorStyles}>{error}</div>
+                )}
             </div>
         </>,
         document.getElementById('portal')

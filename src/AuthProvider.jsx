@@ -10,18 +10,24 @@ export const AuthProvider = ({ children }) => {
     localStorage.getItem('isLoggedIn') === 'true'
   );
 
+  const [userEmail, setUserEmail] = useState(
+    localStorage.getItem('userEmail') || ''
+  );
+
   const logout = () => {
     setIsLoggedIn(false);
+    setUserEmail('');
     localStorage.setItem('isLoggedIn', 'false');
   };
 
-  const login = () => {
+  const login = (email) => {
     setIsLoggedIn(true);
+    setUserEmail(email);
     localStorage.setItem('isLoggedIn', 'true');
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout, userEmail }}>
       {children}
     </AuthContext.Provider>
   );

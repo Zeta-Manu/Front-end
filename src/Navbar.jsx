@@ -20,6 +20,9 @@ const Navbar = () => {
     const [confirmaccountOpen, setConfirmaccountOpen] = useState(false);
     const [externalRegisterError, setExternalRegisterError] = useState();
     const [confirmAccountEmail, setConfirmAccountEmail] = useState('');
+    const [resetPasswordCode, setResetPasswordCode] = useState('');
+    const [forgetEmail, setForgetEmail] = useState('');
+    const [resetEmail, setResetEmail] = useState('');
 
     /*const [loginError, setLoginError] = useState('');*/
 
@@ -49,20 +52,23 @@ const Navbar = () => {
         setLoginOpen(true);
     };
 
-    const openVerificationModal = () => {
+    const openVerificationModal = (email) => {
         setForgetOpen(false);
         setVerificationOpen(true);
-
+        setForgetEmail(email)
     };
 
     const closeVerificationModal = () => {
         setVerificationOpen(false);
         setForgetOpen(true);
+        setForgetEmail(forgetEmail);
     };
 
-    const openResetpasswordModal = () => {
+    const openResetpasswordModal = (verificationcode, email) => {
+        setResetPasswordCode(verificationcode);
         setVerificationOpen(false);
         setResetpasswordOpen(true);
+        setResetEmail(email)
     };
     const closeResetpasswordModal = () => {
         setResetpasswordOpen(false);
@@ -81,6 +87,11 @@ const Navbar = () => {
 
     const onConfirmtoLogin =() => {
         setConfirmaccountOpen(false);
+        setLoginOpen(true);
+    };
+
+    const onResettoLogin =() => {
+        setResetpasswordOpen(false);
         setLoginOpen(true);
     };
     /*
@@ -166,9 +177,9 @@ const Navbar = () => {
             </div>
             <LoginModal open={loginOpen} onClose={closeLoginModal} onSignup={openSignupModal} onForget={openForgetModal} />
             <SignupModal open={signupOpen} onClose={closeSignupModal} onLogin={openLoginModal} onRegisterRequested={onRegisterRequested} openConfirmAccountModal={openConfirmAccountModal} externalRegisterError={externalRegisterError}/>
-            <ForgetModal open={forgetOpen} onClose={closeForgetModal} onVerification={openVerificationModal} />
-            <VerificationModal open={verificationOpen} onClose={closeVerificationModal} onResetpwd={openResetpasswordModal} />
-            <ResetPasswordModal open={resetpasswordOpen} onClose={closeResetpasswordModal} />
+            <ForgetModal open={forgetOpen} onClose={closeForgetModal} openVerificationModal={openVerificationModal} />
+            <VerificationModal open={verificationOpen} onClose={closeVerificationModal} openResetpasswordModal={openResetpasswordModal} email={forgetEmail}/>
+            <ResetPasswordModal open={resetpasswordOpen} onClose={closeResetpasswordModal} verificationcode={resetPasswordCode} email={resetEmail} onResettoLogin={onResettoLogin} />
             <ConfirmAccountModal open={confirmaccountOpen} onClose={closeConfirmAccountModal} email={confirmAccountEmail} onConfirmtoLogin={onConfirmtoLogin}/>
         </div>
     );

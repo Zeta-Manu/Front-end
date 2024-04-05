@@ -36,18 +36,26 @@ const OVERLAY_STYLES = {
     backdropFilter: 'blur(8px)',
     zIndex: 1000
 }
-
+const errorStyles = {
+    padding: '15px 0',
+    fontSize: '13px',
+    color: 'red',
+};
 ResetPasswordModal.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     children: PropTypes.node,
-    onVerification: PropTypes.func
+    onVerification: PropTypes.func,
+    verificationcode: PropTypes.string.isRequired,
+    email: PropTypes.string.isRequired,
+    onResettoLogin: PropTypes.func
 };
 
-export default function ResetPasswordModal({ open, children, onClose}) {
+export default function ResetPasswordModal({ open, children, onClose, verificationcode, email, onResettoLogin}) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
     const [newpwd, setnewpwd] = useState('');
     const [confirmpwd, setconfirmpwd] = useState('');
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -57,6 +65,46 @@ export default function ResetPasswordModal({ open, children, onClose}) {
     }, []);
 
     const MODAL_STYLES = getModalStyles(isDesktop);
+
+    const sendResetpassword = async (verificationcode, email, newpwd) => {
+
+        setError(null);
+
+        if (newpwd !== confirmpwd) {
+            setError('Passwords do not match');
+            return;
+        }
+
+        const resetData = {
+            confirmation_code: verificationcode,
+            email: email,
+            new_password: newpwd
+        };
+        try {
+            const response = await fetch('http://localhost:8080/api/v2/confirm-forgot', {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(resetData),
+            });
+            if (response.ok) {
+                // Account confirmed successfully=>open login modal
+                onResettoLogin()
+                console.log('reset password success')
+            } else if (response.status === 400) {
+                setError('Bad request');
+            } else if (response.status === 500) {
+                setError('Internal Server Error');
+            } else {
+                setError('An unexpected error occurred. Please try again.');
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            throw error;
+        }
+    }
 
     if (!open) return null
 
@@ -96,9 +144,11 @@ export default function ResetPasswordModal({ open, children, onClose}) {
                         value={confirmpwd} onChange={(e) => setconfirmpwd(e.target.value)} />
                 </Box>
                 <div className="flex justify-center w-full mt-5">
-                    <button className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Send</button>
+                    <button onClick={() => sendResetpassword(verificationcode, email, newpwd)} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Send</button>
                 </div>
-
+                {error && (
+                    <div style={errorStyles}>{error}</div>
+                )}
             </div>
         </>,
         document.getElementById('portal')

@@ -51,10 +51,12 @@ ConfirmAccountModal.propTypes = {
     onConfirmtoLogin: PropTypes.func
 };
 
-export default function ConfirmAccountModal({ open, children, onClose, email, onConfirmtoLogin}) {
+export default function ConfirmAccountModal({ open, children, onClose, email, onConfirmtoLogin }) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
     const [verificationcode, setVerificationcode] = useState('');
     const [error, setError] = useState('');
+    const [showResendMessage, setShowResendMessage] = useState(false);
+    const [errorResend, setErrorResend] = useState('');
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -63,9 +65,19 @@ export default function ConfirmAccountModal({ open, children, onClose, email, on
         return () => mediaQueryList.removeEventListener('change', handleResize);
     }, []);
 
+    useEffect(() => {
+        // Show resend message after 1 minutes=>60000 millisecond
+        const resendTimeout = setTimeout(() => {
+            setShowResendMessage(true);
+        },60000);
+
+        // Clear the timeout when component unmounts or state changes
+        return () => clearTimeout(resendTimeout);
+    }, [open]);
+
     const MODAL_STYLES = getModalStyles(isDesktop);
 
-    const sendVerificationCode= async (verificationcode, email) => {
+    const sendVerificationCode = async (verificationcode, email) => {
 
         setError(null);
 
@@ -99,6 +111,33 @@ export default function ConfirmAccountModal({ open, children, onClose, email, on
         }
     }
 
+    const resendConfirm = async (email) => {
+        setErrorResend(null);
+        const resendData = {
+            email: email
+        };
+        try {
+            const response = await fetch('http://localhost:8080/api/v2/resend-confirm', {
+                method: 'POST',
+                headers: {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(resendData),
+            });
+            if (response.ok) {
+                console.log('resend success')
+            } else if (response.status === 500) {
+                setErrorResend('Internal Server Error');
+            }else {
+                setErrorResend('An unexpected error occurred. Please try again.');
+            }
+        } catch (error) {
+            console.error('Resend error:', error);
+            throw error;
+        }
+    }
+
     if (!open) return null
 
     return ReactDom.createPortal(
@@ -125,15 +164,24 @@ export default function ConfirmAccountModal({ open, children, onClose, email, on
                         value={verificationcode} onChange={(e) => setVerificationcode(e.target.value)} />
                 </Box>
                 <h5 onClick={onClose} className='text-[#111111] text-right ml-auto' style={{ marginTop: '10px' }}>
-                    <span className='font-normal'>If you did not receive a code!</span>
-                    {' '}
-                    <span className='font-semibold border-b border-black '>Resend</span>
+                    {showResendMessage ? (
+                        <>
+                            <span className='font-normal'>If you did not receive a code!</span>
+                            {' '}
+                            <span className='font-semibold border-b border-black' onClick={() => { resendConfirm(email); }}>Resend</span>
+                        </>
+                    ) : (
+                        <span>Please wait for the sending process...</span>
+                    )}
                 </h5>
                 <div className="flex justify-center w-full mt-5">
                     <button onClick={() => sendVerificationCode(verificationcode, email)} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Confirm</button>
                 </div>
                 {error && (
                     <div style={errorStyles}>{error}</div>
+                )}
+                {errorResend && (
+                    <div style={errorStyles}>{errorResend}</div>
                 )}
             </div>
         </>,

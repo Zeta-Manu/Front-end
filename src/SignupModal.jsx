@@ -60,7 +60,8 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
     const [passwordRepeat, setPasswordRepeat] = useState('');
     const [password, setPassword] = useState('');
     const [email, setemail] = useState('');
-    const [localRegisterError, setLocalRegisterError] = useState()
+    const [localRegisterError, setLocalRegisterError] = useState();
+    const [agreeTerms, setAgreeTerms] = useState(false);
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -72,6 +73,12 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
     const MODAL_STYLES = getModalStyles(isDesktop);
 
     const onRegisterTrigger = useCallback(async () => {
+
+        if (!agreeTerms) { //user need to tick to agree with term and condition first
+            setLocalRegisterError("Please agree to the Terms and Conditions");
+            return;
+        }
+
         if (validate(passwordRepeat, password)) {
             onRegisterRequested({ password, username, email })
             console.log("Signup with username:", username);
@@ -88,7 +95,7 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
                 console.error('Error opening confirm account modal:', error);
             }
         }
-    }, [passwordRepeat, password, username, email, localRegisterError, externalRegisterError, onRegisterRequested, openConfirmAccountModal]);
+    }, [agreeTerms, passwordRepeat, password, username, email, localRegisterError, externalRegisterError, onRegisterRequested, openConfirmAccountModal]);
 
     useEffect(() => {
         if (!open) {
@@ -111,22 +118,22 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
         if (passwordRepeat !== password) {
             setLocalRegisterError("Password entries must match")
             return false;
-        } else if(password.length < 8){ //min length 8 char
+        } else if (password.length < 8) { //min length 8 char
             setLocalRegisterError("Password must contain at least 8 characters")
             return false;
-        }else if (!/\d/.test(password)) { //not contain number
+        } else if (!/\d/.test(password)) { //not contain number
             setLocalRegisterError("Password must contain at least 1 number")
             return false;
-        }else if(!/[!@#$%^&*]/.test(password)){ //not contain special char
+        } else if (!/[!@#$%^&*]/.test(password)) { //not contain special char
             setLocalRegisterError("Password must contain at least 1 specific character")
             return false;
-        } else if(!/[A-Z]/.test(password)){ //no uppercase
+        } else if (!/[A-Z]/.test(password)) { //no uppercase
             setLocalRegisterError("Password must contain at least 1 uppercase letter")
             return false;
-        }else if(!/[a-z]/.test(password)){ //no lowercase
+        } else if (!/[a-z]/.test(password)) { //no lowercase
             setLocalRegisterError("Password must contain at least 1 lowercase letter")
             return false;
-        }else {
+        } else {
             setLocalRegisterError(null);
             return true;
         }
@@ -205,6 +212,8 @@ export default function SignupModal({ open, children, onClose, onLogin, onRegist
                                 color: '#111111',
                             },
                         }}
+                        checked={agreeTerms}
+                        onChange={(e) => setAgreeTerms(e.target.checked)}
                     />}
                     label={
                         <h5 style={{ display: 'inline-block' }}>

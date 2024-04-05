@@ -41,10 +41,11 @@ VerificationModal.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     children: PropTypes.node,
-    onResetpwd: PropTypes.func
+    openResetpasswordModal: PropTypes.func,
+    email: PropTypes.string.isRequired
 };
 
-export default function VerificationModal({ open, children, onClose, onResetpwd }) {
+export default function VerificationModal({ open, children, onClose, openResetpasswordModal, email }) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
     const [verificationcode, setVerificationcode] = useState('');
 
@@ -58,6 +59,10 @@ export default function VerificationModal({ open, children, onClose, onResetpwd 
     const MODAL_STYLES = getModalStyles(isDesktop);
 
     if (!open) return null
+
+    const sendVerify = async (verificationcode, email) => {
+        openResetpasswordModal(verificationcode, email);
+    }
 
     return ReactDom.createPortal(
         <>
@@ -82,13 +87,8 @@ export default function VerificationModal({ open, children, onClose, onResetpwd 
                     <TextField fullWidth id="verificationcode"
                         value={verificationcode} onChange={(e) => setVerificationcode(e.target.value)} />
                 </Box>
-                <h5 onClick={onClose} className='text-[#111111] text-right ml-auto' style={{ marginTop: '10px' }}>
-                    <span className='font-normal'>If you did not receive a code!</span>
-                    {' '}
-                    <span className='font-semibold border-b border-black '>Resend</span>
-                </h5>
                 <div className="flex justify-center w-full mt-5">
-                    <button onClick={onResetpwd} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Send</button>
+                    <button onClick={() => sendVerify(verificationcode,email)} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Send</button>
                 </div>
 
             </div>

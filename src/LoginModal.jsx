@@ -104,7 +104,7 @@ export default function LoginModal({ open, children, onClose, onSignup, onForget
       });
       if (response.ok) {
         console.log('login successful!')
-        login()
+        login(email)
         onClose()
       } else if (response.status === 400) {
         // Invalid Password or Missing Parameter
