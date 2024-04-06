@@ -5,7 +5,13 @@ import Webcam from "react-webcam";
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import PropTypes from 'prop-types';
+import { useAuth } from "./AuthProvider";
 
+const errorStyles = {
+    padding: '15px 0',
+    fontSize: '13px',
+    color: 'red',
+};
 const VideoPreview = ({ stream }) => {
     const videoRef = useRef(null);
 
@@ -35,6 +41,9 @@ const Prediction = () => {
     /*const [recordBlobUrl, setRecordBlobUrl] = useState(null);*/
     const confident = 100; //from backend
     const [awaitUpload, setAwaitUpload] = useState(false);
+    const [error, setError] = useState('');
+
+    const { access_token } = useAuth();
 
     const handleStream = async () => {
         setStreamActive((prevState) => !prevState);
@@ -111,35 +120,34 @@ const Prediction = () => {
     }, [mediaBlobUrl, awaitUpload])
 
     const uploadVideo = async (blobUrl) => {
+        const formData = new FormData();
+
+        formData.append('video', blobUrl, 'recorded-video.mp4'); //video mp4
+
+        const videoData = {
+            Authorization: access_token,
+            video: formData
+        };
+
         try {
-            const formData = new FormData();
-
-            formData.append('video', blobUrl, 'recorded-video.mp4');
-
-            const response = await fetch('http://localhost:8080/api/postVideo', {
+            const response = await fetch(import.meta.env.VITE_PREDICT_ENDPOINT, {
                 method: 'POST',
-                mode: 'cors',
-                body: formData,
+                headers: {
+                    'accept': 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(videoData),
             });
-
-            const errorCode = response.status;
-
-            switch (errorCode) {
-                case 200:
-                    console.log("success")
-                    break;
-                case 400:
-                    console.error("...")
-                    break;
-                case 500:
-                    console.error("Internal server error")
-                    break;
-                default:
-                    console.error("Unknown error")
-                    break;
+            if (response.ok) {
+                console.log('sendvideo success')
+            } else if (response.status === 400) {
+                setError('Bad request');
+            } else {
+                setError('An unexpected error occurred. Please try again.');
             }
         } catch (error) {
-            console.error('Error uploading video:', error);
+            console.error('Resend error:', error);
+            throw error;
         }
     };
 
@@ -211,6 +219,9 @@ const Prediction = () => {
                     )}
                 </div>
                 <button onClick={() => setShowRecordedVideo(!showRecordedVideo)}>Preview</button>
+                {error && (
+                    <div style={errorStyles}>{error}</div>
+                )}
                 {showRecordedVideo && (
                     <div>
                         <video src={mediaBlobUrl} controls autoPlay loop />
