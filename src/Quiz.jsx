@@ -3,16 +3,23 @@ import { AppBar, Box, Toolbar, TextField  } from '@mui/material';
 import logo from './assets/logo.svg'
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import SchoolIcon from '@mui/icons-material/School';
+import QuitQuizModal from "./QuitQuizModal";
 
 
 const Quiz = () => {
-
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [showFinalResults, setFinalResults] = useState(false);
     const [score, setScore] = useState(0);
-    const [answer, setAnswer]= useState('')
+    const [answer, setAnswer]= useState('');
+    const [quitOpen, setQuizOpen] = useState(false);
 
+    const openQuitModal = () => {
+        setQuizOpen(true);
+    };
 
+    const closeQuitModal = () => {
+        setQuizOpen(false);
+    };
     return (
         <div className="flex w-screen h-screen">
             <div className="sticky top-0 flex justify-center items-center">
@@ -20,7 +27,7 @@ const Quiz = () => {
                     <React.Fragment>
                         <AppBar sx={{ background: "#C5DFE7", boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}>
                             <Toolbar>
-                                <ArrowBackIosNewIcon sx={{ marginLeft: '6px', color: 'black' }} />
+                                <ArrowBackIosNewIcon onClick={openQuitModal} sx={{ marginLeft: '6px', color: 'black' }} />
                                 <img src={logo} alt="Logo" style={{ width: '45px', height: '45px', marginLeft: '20px' }} />
                                 <div className="text-xl text-black font-nunito-sans mx-4 z-20">Chapter 1.1</div>
                                 <SchoolIcon fontSize="large" sx={{ color: '#EB9980', marginLeft: '4px' }} />
@@ -60,8 +67,8 @@ const Quiz = () => {
                     <button className="w-1/6 h-1/4 text-xl text-white font-semibold bg-[#EB9980] rounded-lg hover:text-white hover:bg-[#FFC6B4]">Submit</button>
                 </div>
 
-
             </div>
+            <QuitQuizModal open={quitOpen} onClose={closeQuitModal} />
         </div>
     );
 }
