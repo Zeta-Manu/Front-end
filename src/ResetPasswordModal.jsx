@@ -81,7 +81,7 @@ export default function ResetPasswordModal({ open, children, onClose, verificati
             new_password: newpwd
         };
         try {
-            const response = await fetch('http://localhost:8080/api/v2/confirm-forgot', {
+            const response = await fetch(import.meta.env.VITE_AUTH_ENDPOINT+'/confirm-forgot', {
                 method: 'POST',
                 headers: {
                     'accept': 'application/json',

@@ -71,7 +71,7 @@ export default function ForgetModal({ open, children, onClose, openVerificationM
             email: email
         };
         try {
-            const response = await fetch('http://localhost:8080/api/v2/forgot-password', {
+            const response = await fetch(import.meta.env.VITE_AUTH_ENDPOINT+'/forgot-password', {
                 method: 'POST',
                 headers: {
                     'accept': 'application/json',

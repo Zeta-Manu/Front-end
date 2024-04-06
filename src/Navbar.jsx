@@ -138,7 +138,7 @@ const Navbar = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:8080/api/v2/signup', {
+            const response = await fetch(import.meta.env.VITE_AUTH_ENDPOINT +'/signup', {
                 method: 'POST',
                 headers: {
                     'accept': 'application/json',

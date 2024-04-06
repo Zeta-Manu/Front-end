@@ -77,6 +77,7 @@ export default function LoginModal({ open, children, onClose, onSignup, onForget
       // Reset username and password when modal closes
       setEmail('');
       setPassword('');
+      setError('')
     }
   }, [open]);
 
@@ -93,8 +94,9 @@ export default function LoginModal({ open, children, onClose, onSignup, onForget
       password: password
     };
 
+    console.log(import.meta.env.VITE_AUTH_ENDPOINT + '/login')
     try {
-      const response = await fetch('http://localhost:8080/api/v2/login', {
+      const response = await fetch(import.meta.env.VITE_AUTH_ENDPOINT + '/login', {
         method: 'POST',
         headers: {
           'accept': 'application/json',
