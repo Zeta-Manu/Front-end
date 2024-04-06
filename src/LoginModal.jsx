@@ -105,8 +105,9 @@ export default function LoginModal({ open, children, onClose, onSignup, onForget
         body: JSON.stringify(loginData)
       });
       if (response.ok) {
+        const data = await response.json();
         console.log('login successful!')
-        login(email)
+        login(email, data.data.access_token)
         onClose()
       } else if (response.status === 400) {
         // Invalid Password or Missing Parameter
