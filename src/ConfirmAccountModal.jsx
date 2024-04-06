@@ -86,7 +86,7 @@ export default function ConfirmAccountModal({ open, children, onClose, email, on
             email: email
         };
         try {
-            const response = await fetch('http://localhost:8080/api/v2/confirm', {
+            const response = await fetch(import.meta.env.VITE_AUTH_ENDPOINT+'/confirm', {
                 method: 'POST',
                 headers: {
                     'accept': 'application/json',
