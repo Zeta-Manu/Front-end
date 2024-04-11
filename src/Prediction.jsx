@@ -44,6 +44,7 @@ const Prediction = () => {
     const [error, setError] = useState('');
 
     const { access_token } = useAuth();
+    const { userEmail }=useAuth();
 
     const handleStream = async () => {
         setStreamActive((prevState) => !prevState);
@@ -121,25 +122,27 @@ const Prediction = () => {
 
     const uploadVideo = async (blobUrl) => {
         const formData = new FormData();
+        const blob = await fetch(blobUrl).then(res => res.blob());
 
-        formData.append('video', blobUrl, 'recorded-video.mp4'); //video mp4
+        //videoname
+        const randomName = userEmail+ Math.random().toString(36).substring(7) + '.mp4';
 
-        const videoData = {
-            Authorization: access_token,
-            video: formData
-        };
+        formData.append('video', blob, randomName); //video mp4
+
+        //console.log(videoData);
 
         try {
             const response = await fetch(import.meta.env.VITE_PREDICT_ENDPOINT, {
                 method: 'POST',
                 headers: {
-                    'accept': 'application/json',
-                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + access_token
                 },
-                body: JSON.stringify(videoData),
+                body: formData,
             });
             if (response.ok) {
                 console.log('sendvideo success')
+                const data = await response.json();
+                console.log(data);
             } else if (response.status === 400) {
                 setError('Bad request');
             } else {

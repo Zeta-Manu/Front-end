@@ -107,6 +107,7 @@ export default function LoginModal({ open, children, onClose, onSignup, onForget
       if (response.ok) {
         const data = await response.json();
         console.log('login successful!')
+        console.log(data.data.access_token);
         login(email, data.data.access_token)
         onClose()
       } else if (response.status === 400) {
