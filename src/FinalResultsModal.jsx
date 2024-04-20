@@ -40,10 +40,10 @@ FinalResultsModal.propTypes = {
     children: PropTypes.node,
     score: PropTypes.number.isRequired,
     finalquestion: PropTypes.number.isRequired,
-    onRestart: PropTypes.func.isRequired
+    restartGame: PropTypes.func.isRequired
 };
 
-export default function FinalResultsModal({ open, children, score, onClose, finalquestion, onRestart }) {
+export default function FinalResultsModal({ open, children, score, onClose, finalquestion, restartGame }) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
 
     useEffect(() => {
@@ -72,7 +72,7 @@ export default function FinalResultsModal({ open, children, score, onClose, fina
                     </div>
                     <div className='flex justify-end w-full h-[33%] items-center bg-white rounded-b-[36px] pr-4 mb-4'>
                         <Link to="/learning"><button onClick={onClose} className='mr-4 p-2 px-5 bg-white border border-[#525252] rounded-[30px] text-[#525252] hover:bg-[#525252] hover:text-white'>Exit</button></Link>
-                        <button onClick={onRestart} className='mr-4 p-2 px-5 bg-[#5F81AD] border border-[#5F81AD] rounded-[30px] text-white hover:bg-white hover:text-[#5F81AD] '>Restart</button>
+                        <button onClick={restartGame} className='mr-4 p-2 px-5 bg-[#5F81AD] border border-[#5F81AD] rounded-[30px] text-white hover:bg-white hover:text-[#5F81AD] '>Restart</button>
                     </div>
                 </div>
                 {children}

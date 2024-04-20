@@ -114,44 +114,53 @@ const Prediction = () => {
 
     useEffect(() => {
         if (!awaitUpload && mediaBlobUrl != undefined) {
-            console.log(mediaBlobUrl, "something occured with medialBlobUrl")
+            console.log(mediaBlobUrl)
             uploadVideo(mediaBlobUrl);
             downloadBlob(mediaBlobUrl);
         }
     }, [mediaBlobUrl, awaitUpload])
 
     const uploadVideo = (blobUrl) => {
-        const formData = new FormData();
-        const blob = fetch(blobUrl).then(res => res.blob());
-
         //videoname
-        const randomName = userEmail+ Math.random().toString(36).substring(7) + '.mp4';
+        const randomName = userEmail + Math.random().toString(36).substring(7) + '.mp4';
 
-        formData.append('video', blob, randomName); //video mp4
-
-        //console.log(videoData);
-
-        try {
-            const response = fetch(import.meta.env.VITE_PREDICT_ENDPOINT, {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + access_token
-                },
-                body: formData,
+        fetch(blobUrl)
+            .then((res) => res.blob())
+            .then((blob) => {
+                const formData = new FormData();
+                formData.append('video', blob, randomName);
+    
+                fetch(import.meta.env.VITE_PREDICT_ENDPOINT, {
+                    method: 'POST',
+                    headers: {
+                        'accept': 'application/json',
+                        'Authorization': 'Bearer ' + access_token
+                    },
+                    body: formData,
+                    timeout: 100000
+                })
+                    .then((response) => {
+                        if (response.ok) {
+                            console.log('sendvideo success');
+                            return response.json();
+                        } else if (response.status === 400) {
+                            setError('Bad request');
+                        } else {
+                            setError('An unexpected error occurred. Please try again.');
+                        }
+                    })
+                    .then((data) => {
+                        console.log(data);
+                    })
+                    .catch((error) => {
+                        console.error('Resend error:', error);
+                        throw error;
+                    });
+            })
+            .catch((error) => {
+                console.error('Error fetching blob:', error);
+                throw error;
             });
-            if (response.ok) {
-                console.log('sendvideo success')
-                const data = response.json();
-                console.log(data);
-            } else if (response.status === 400) {
-                setError('Bad request');
-            } else {
-                setError('An unexpected error occurred. Please try again.');
-            }
-        } catch (error) {
-            console.error('Resend error:', error);
-            throw error;
-        }
     };
 
     const downloadBlob = (blobUrl) => {

@@ -16,58 +16,70 @@ const Quiz = () => {
     const [finalScore, setFinalScore] = useState('');
     const [finalquestion, setfinalquestion] = useState('');
 
-    const [questions, setQuestions] = useState([
+    const [questions, setQuestions] = useState(() => shuffleArray([
         {
-            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/filebla.mp4",
-            correctans: "computer"
+            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/computer_s2",
+            correctans: "computer",
+            ansth: "คอมพิวเตอร์"
         },
         {
-            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/filebla.mp4",
-            correctans: "computer"
+            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/before.mp4",
+            correctans: "before",
+            ansth: "ก่อน"
         },
         {
-            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/filebla.mp4",
-            correctans: "computer"
+            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/cool.mp4",
+            correctans: "cool",
+            ansth: "ดีเยี่ยม"
         },
         {
-            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/filebla.mp4",
-            correctans: "computer"
+            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/cousin.mp4",
+            correctans: "cousin",
+            ansth: "ญาติ"
         },
         {
-            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/filebla.mp4",
-            correctans: "computer"
+            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/drink.mp4",
+            correctans: "drink",
+            ansth: "ดื่ม"
         },
         {
-            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/filebla.mp4",
-            correctans: "computer"
+            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/go.mp4",
+            correctans: "go",
+            ansth: "ไป"
         },
         {
-            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/filebla.mp4",
-            correctans: "computer"
+            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/help.mp4",
+            correctans: "help",
+            ansth: "ช่วย"
         },
         {
-            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/filebla.mp4",
-            correctans: "computer"
+            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/short.mp4",
+            correctans: "short",
+            ansth: "สั้น"
         },
         {
-            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/filebla.mp4",
-            correctans: "computer"
+            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/thin.mp4",
+            correctans: "thin",
+            ansth: "ผอม"
         },
         {
-            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/filebla.mp4",
-            correctans: "computer"
+            signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/who.mp4",
+            correctans: "who",
+            ansth: "ใคร"
         },
-    ]);
+    ]));
 
     //submit answer
     const checkanswer = () => {
         const currentCorrectAns = questions[currentQuestion].correctans;
         const formatAnswer = (answer || '').trim().toLowerCase();
         const formatCorrectAns = currentCorrectAns.trim().toLowerCase();
+        const currentCorrectThAns = questions[currentQuestion].ansth;
+        const formatAnsth = currentCorrectThAns.trim().toLowerCase();
 
         let updatedScore = score;
 
-        if (formatAnswer === formatCorrectAns) {
+        if (formatAnswer === formatCorrectAns || formatAnswer === formatAnsth) {
             updatedScore += 1;
         }
 
@@ -115,7 +127,7 @@ const Quiz = () => {
         setScore(0);
         setCurrentQuestion(0);
         setFinalResults(false);
-        setQuestions(shuffleArray(questions));
+        setQuestions((prevState) => shuffleArray([...prevState]));
     };
 
 
@@ -169,7 +181,7 @@ const Quiz = () => {
 
             </div>
             <QuitQuizModal open={quitOpen} onClose={closeQuitModal} />
-            <FinalResultsModal open={showFinalResults} score={parseInt(finalScore)} onClose={closeFinalResults} finalquestion={parseInt(finalquestion)} onRestart={restartGame} />
+            <FinalResultsModal open={showFinalResults} score={parseInt(finalScore)} onClose={closeFinalResults} finalquestion={parseInt(finalquestion)} restartGame={restartGame} />
         </div>
     );
 }
