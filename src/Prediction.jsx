@@ -264,7 +264,7 @@ const Prediction = () => {
             </div>
             <div className="flex  flex-col w-1/3 h-9/10 mt-20">
                 <h1 className="text-black mx-10 mt-2 font-bold">Translation</h1>
-                <div className="flex h-3/6 bg-[#EDEDED] mx-10 mt-1 rounded-lg p-5"> {/*#F7F7F7*/}
+                <div className="flex flex-col h-3/6 bg-[#EDEDED] mx-10 mt-1 rounded-lg p-5"> {/*#F7F7F7*/}
                 {trackReq ? (
                         <div className="flex items-center justify-center h-full">
                             <span className="loading loading-spinner loading-lg"></span>
