@@ -39,12 +39,14 @@ const Prediction = () => {
         useReactMediaRecorder({ audio: false, video: true, type: "video/mp4" }); //status
     const [showRecordedVideo, setShowRecordedVideo] = useState(false);
     /*const [recordBlobUrl, setRecordBlobUrl] = useState(null);*/
-    const confident = 100; //from backend
+    const [confident, setConfident] = useState(0); //from backend
     const [awaitUpload, setAwaitUpload] = useState(false);
     const [error, setError] = useState('');
+    const [topResults, setTopResults] = useState([]);
+    const [trackReq, setTrackReq] = useState(false);
 
     const { access_token } = useAuth();
-    const { userEmail }=useAuth();
+    const { userEmail } = useAuth();
 
     const handleStream = async () => {
         setStreamActive((prevState) => !prevState);
@@ -100,11 +102,24 @@ const Prediction = () => {
         }
     };*/
 
+    const processResult = (result) => {
+        if (result.length <= 3) {
+            setTopResults(result);
+        } else {
+            // sort array by count
+            const sortedResults = result.sort((a, b) => b.count - a.count);
+            //top3
+            const topThreeResults = sortedResults.slice(0, 3);
+            setTopResults(topThreeResults);
+        }
+    };
+
     const handleStopRecording = async () => {
         try {
             await stopRecording();
             console.log('Recording stopped, blob:', mediaBlobUrl);
             setAwaitUpload(false);
+            setTrackReq(true);
             // uploadVideo(mediaBlobUrl);
             // downloadBlob(mediaBlobUrl);
         } catch (error) {
@@ -116,7 +131,7 @@ const Prediction = () => {
         if (!awaitUpload && mediaBlobUrl != undefined) {
             console.log(mediaBlobUrl)
             uploadVideo(mediaBlobUrl);
-            downloadBlob(mediaBlobUrl);
+            /*downloadBlob(mediaBlobUrl);*/
         }
     }, [mediaBlobUrl, awaitUpload])
 
@@ -129,7 +144,7 @@ const Prediction = () => {
             .then((blob) => {
                 const formData = new FormData();
                 formData.append('video', blob, randomName);
-    
+
                 fetch(import.meta.env.VITE_PREDICT_ENDPOINT, {
                     method: 'POST',
                     headers: {
@@ -151,9 +166,12 @@ const Prediction = () => {
                     })
                     .then((data) => {
                         console.log(data);
+                        console.log(data.result);
+                        processResult(data.result);
+                        setTrackReq(false);
                     })
                     .catch((error) => {
-                        console.error('Resend error:', error);
+                        console.error('Sending error:', error);
                         throw error;
                     });
             })
@@ -163,14 +181,14 @@ const Prediction = () => {
             });
     };
 
-    const downloadBlob = (blobUrl) => {
+    /*const downloadBlob = (blobUrl) => {
         const a = document.createElement("a");
         a.href = blobUrl;
         a.download = "recorded-video.mp4";
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
-    };
+    };*/
 
     const getColor = (confident) => {
         let opacity;
@@ -190,6 +208,10 @@ const Prediction = () => {
         }
     }
 
+    const changeConfident = (index) => {
+        setConfident(Math.round(topResults[index].average * 100));
+    };
+    
 
     return (
         <div className="flex w-screen h-screen">
@@ -243,7 +265,23 @@ const Prediction = () => {
             <div className="flex  flex-col w-1/3 h-9/10 mt-20">
                 <h1 className="text-black mx-10 mt-2 font-bold">Translation</h1>
                 <div className="flex h-3/6 bg-[#EDEDED] mx-10 mt-1 rounded-lg p-5"> {/*#F7F7F7*/}
-                    <h1 className="text-black font-italic">Translation...</h1>
+                {trackReq ? (
+                        <div className="flex items-center justify-center h-full">
+                            <span className="loading loading-spinner loading-lg"></span>
+                        </div>
+                    ) : (
+                        topResults.length > 0 ? (
+                            topResults.map((result, index) => (
+                                <div key={index} className="bg-[#EDEDED] h-1/3 p-2 my-2 hover:bg-[#f1f5f9]" onClick={() => changeConfident(index)}>
+                                    <p>Handsign: {result.class}</p>
+                                    <p>ภาษามือ: {result.translated}</p>
+                                    <p className="text-sm">Accuracy: {(result.average*100).toFixed(2)} %</p>
+                                </div>
+                            ))
+                        ) : (
+                            <h1 className="text-black font-italic">Translation...</h1>
+                        ))
+                    }
                 </div>
                 <div className="flex rounded-lg h-2/6 mx-10 mt-4 bg-[#e7f2f6] p-2"> {/*#222222, #F7F7F7*/}
                     <CircularProgressbar

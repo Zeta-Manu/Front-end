@@ -30,7 +30,7 @@ const Quiz = () => {
         {
             signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/cool.mp4",
             correctans: "cool",
-            ansth: "ดีเยี่ยม"
+            ansth: "เท่"
         },
         {
             signvideo: "https://d3108kdhfsx9kk.cloudfront.net/lesson/cousin.mp4",
