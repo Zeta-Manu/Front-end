@@ -9,6 +9,10 @@ COPY . .
 
 # EXPOSE
 
-EXPOSE 3000
+EXPOSE 4173
 
-CMD ["npm", "run", "build"]
+# Build
+RUN npm run build
+
+# Run
+CMD ["npm", "run", "preview"]
