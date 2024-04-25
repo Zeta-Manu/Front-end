@@ -152,7 +152,7 @@ const Prediction = () => {
                         'Authorization': 'Bearer ' + access_token
                     },
                     body: formData,
-                    timeout: 100000
+                    timeout: 200000
                 })
                     .then((response) => {
                         if (response.ok) {
