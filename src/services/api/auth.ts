@@ -142,3 +142,5 @@ authInstance.postConfirmForget = async (body: ConfirmForgotBody) => {
         throw error;
     } 
 }
+
+export { authInstance };

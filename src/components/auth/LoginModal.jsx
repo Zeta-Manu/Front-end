@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDom from 'react-dom'
 import PropTypes from 'prop-types';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
+
 import { useAuth } from '../../AuthProvider';
+import { authInstance } from '../../services/api/auth'
 
 const DESKTOP_MEDIA_QUERY = '(min-width: 768px)';
 function getModalStyles(isDesktop) {
@@ -94,43 +96,14 @@ export default function LoginModal({ open, children, onClose, onSignup, onForget
       password: password
     };
 
-    console.log(import.meta.env.VITE_AUTH_ENDPOINT + '/login')
     try {
-      const response = await fetch(import.meta.env.VITE_AUTH_ENDPOINT + '/login', {
-        method: 'POST',
-        headers: {
-          'accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(loginData)
-      });
-      if (response.ok) {
-        const data = await response.json();
-        console.log('login successful!')
-        console.log(data.data.access_token);
-        login(email, data.data.access_token)
-        onClose()
-      } else if (response.status === 400) {
-        // Invalid Password or Missing Parameter
-        setError('Invalid Password or Missing Parameter');
-      } else if (response.status === 401) {
-        // Not Authorized
-        setError('Not Authorized');
-      } else if (response.status === 403) {
-        // User Not Confirm
-        setError('User Not Confirm');
-      } else if (response.status === 404) {
-        // User Not Found
-        setError('User Not Found');
-      } else if (response.status === 500) {
-        // Internal Server Error
-        setError('Internal Server Error');
-      } else {
-        setError('Unknown error');
-      }
+      const response = await authInstance.postLogin(loginData); // Use authInstance.postLogin
+      console.log('login successful!');
+      login(email, response.data.access_token);
+      onClose();
     } catch (error) {
       console.error('Login error:', error);
-      throw error;
+      setError('Unknown error');
     }
   }
 
