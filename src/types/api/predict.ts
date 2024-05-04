@@ -6,10 +6,4 @@ interface PredictionInstanceMethods {
 
 interface PredictionInstance extends AxiosInstance, PredictionInstanceMethods { };
 
-interface AuthInstanceMethods {
-
-}
-
-interface AuthInstance extends AxiosInstance, AuthInstanceMethods { };
-
-export type { PredictionInstance, AuthInstance };
+export type { PredictionInstance };

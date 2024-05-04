@@ -16,9 +16,9 @@
 
     "baseUrl": "./src",
     "paths": {
-      "@components/*": ["./components/*"],
-      "@services/*": ["./services/*"],
-      "@types/*": ["./types/*"],
+      "@components/*": ["components/*"],
+      "@services/*": ["services/*"],
+      "@customTypes/*": ["types/*"],
     },
 
     /* Linting */
