@@ -2,9 +2,8 @@ import axios, { AxiosRequestConfig } from 'axios';
 
 import { PredictionInstance } from '@customTypes/api/predict';
 
-// TODO: PREDICT_ENV
 const predictionInstance = axios.create({
-  baseURL: "backend_url",
+  baseURL: import.meta.env.VITE_PREDICT_ENDPOINT,
 }) as PredictionInstance;
 
 predictionInstance.postPrediction = async (formData: FormData | object, accessToken: string) => {

@@ -2,9 +2,8 @@ import axios, { AxiosRequestConfig } from 'axios';
 
 import { AuthInstance, ChangePasswordBody, ConfirmForgotBody, ConfirmSignUpBody, EmailBody, LoginBody, SignUpBody } from '@customTypes/api/auth';
 
-// TODO: AUTH_ENV
 const authInstance = axios.create({
-    baseURL: "auth_url",
+    baseURL: import.meta.env.VITE_AUTH_ENDPOINT,
 }) as AuthInstance;
 
 // TODO: Write Error Handling
