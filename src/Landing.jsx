@@ -31,7 +31,7 @@ const Landing = () => {
               </div>
             </div>
             <div className="flex h-2/6 w-full items-center justify-center mt-8 mb-5">
-              <Link to="/">
+              <Link to="/home">
                 <button className="bg-[#EB9980] text-white font-semibold min-w-150 py-8 px-40 rounded hover:text-white hover:bg-[#FFC6B4]" style={{ boxShadow: "0 0.2rem 0.20rem 0.2rem rgba(0, 0, 0, 0.25)" }}>Start your Journey</button>
               </Link>
             </div>

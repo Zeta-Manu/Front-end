@@ -160,10 +160,12 @@ const Navbar = () => {
                 <React.Fragment>
                     <AppBar sx={{ background: "#C5DFE7", boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)' }}>
                         <Toolbar>
-                            <img src={logo} alt="Logo" style={{ width: '45px', height: '45px', marginLeft: '8px' }} />
-                            <Link to="/landing"><button className="text-xl text-black font-nunito-sans mx-2 z-20">Manu</button></Link>
+                            <Link className="flex" to="/">
+                                <img src={logo} alt="Logo" style={{ width: '45px', height: '45px', marginLeft: '8px' }} />
+                                <button className="text-xl text-black font-nunito-sans mx-2 z-20">Manu</button>
+                            </Link>
                             <LanguageIcon sx={{ marginLeft: 'auto', color: '#808080' }} />
-                            <Link to="/"><Typography sx={{ marginLeft: '15px', color: 'black' }}>Home</Typography></Link>
+                            <Link to="/home"><Typography sx={{ marginLeft: '15px', color: 'black' }}>Home</Typography></Link>
                             <Button onClick={openLoginModal} variant="contained" sx={{
                                 marginLeft: '15px', backgroundColor: '#BCFDE7', color: 'black', '&:hover': {
                                     color: 'white',
