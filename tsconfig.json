@@ -12,14 +12,16 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
+    "jsx": "react",
 
     "baseUrl": "./src",
     "paths": {
       "@src/*": ["./*"],
+      "@context/*": ["context/*"],
       "@components/*": ["components/*"],
       "@services/*": ["services/*"],
       "@customTypes/*": ["types/*"],
+      "@hooks/*": ["hooks/*"]
     },
 
     /* Linting */

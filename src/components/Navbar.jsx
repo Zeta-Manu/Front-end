@@ -1,15 +1,16 @@
 import React, { useState } from "react";
-import LoginModal from './LoginModal';
-import SignupModal from './SignupModal'
+import { Link } from "react-router-dom";
 import { AppBar, Toolbar, Button, Typography } from '@mui/material';
 import LanguageIcon from '@mui/icons-material/Language';
 import SettingsIcon from '@mui/icons-material/Settings';
-import { Link } from "react-router-dom";
-import ForgetModal from "./ForgetModal";
-import VerificationModal from "./VerificationModal";
-import ResetPasswordModal from "./ResetPasswordModal";
-import ConfirmAccountModal from "./ConfirmAccountModal";
-import logo from './assets/logo.svg'
+
+import ForgetModal from "./auth/ForgetModal";
+import VerificationModal from "./auth/VerificationModal";
+import ResetPasswordModal from "./auth/ResetPasswordModal";
+import ConfirmAccountModal from "./auth/ConfirmAccountModal";
+import LoginModal from './auth/LoginModal';
+import SignupModal from './auth/SignupModal';
+import logo from '../assets/logo.svg';
 
 const Navbar = () => {
     const [loginOpen, setLoginOpen] = useState(false);

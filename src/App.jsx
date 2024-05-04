@@ -1,6 +1,6 @@
 import './App.css'
 import { Routes, Route, useLocation } from "react-router-dom";
-import Navbar from './Navbar'
+import Navbar from './components/Navbar'
 import Recognition from './Recognition'
 import Home from './Home';
 import Landing from './Landing';
@@ -10,7 +10,7 @@ import Learning from './Learning';
 import { useAuth } from './AuthProvider';
 import AuthNavbar from './AuthNavbar';
 import Quiz from './Quiz';
-import NotFoundPage from './components/404/404';
+import NotFoundPage from './components/404';
 
 function App() {
   const { isLoggedIn } = useAuth() || { isLoggedIn: false };
