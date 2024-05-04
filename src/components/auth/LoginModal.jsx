@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import ReactDom from 'react-dom'
+import ReactDom from 'react-dom';
 import PropTypes from 'prop-types';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
 import { useAuth } from '../../AuthProvider';
-import { authInstance } from '../../services/api/auth'
+import { authInstance } from '../../services/api/auth';
 
 const DESKTOP_MEDIA_QUERY = '(min-width: 768px)';
 function getModalStyles(isDesktop) {
@@ -26,7 +26,7 @@ function getModalStyles(isDesktop) {
     alignItems: 'flex-start',
     width: isDesktop ? '450px' : '100%',
     minHeight: isDesktop ? 'auto' : '150px',
-    padding: isDesktop ? '50px' : '15px'
+    padding: isDesktop ? '50px' : '15px',
   };
 }
 const OVERLAY_STYLES = {
@@ -37,8 +37,8 @@ const OVERLAY_STYLES = {
   bottom: 0,
   backgroundColor: 'rgba(255, 255, 255, 0.22)',
   backdropFilter: 'blur(8px)',
-  zIndex: 1000
-}
+  zIndex: 1000,
+};
 const errorStyles = {
   padding: '15px 0',
   fontSize: '13px',
@@ -50,22 +50,22 @@ LoginModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   children: PropTypes.node,
   onSignup: PropTypes.func.isRequired,
-  onForget: PropTypes.func
+  onForget: PropTypes.func,
 };
 
 export default function LoginModal({ open, children, onClose, onSignup, onForget }) {
   const { login } = useAuth();
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   const onKeyDown = (e) => {
     if (e.key === 'Enter') {
-      sendLoginRequest()
+      sendLoginRequest();
     }
-  }
+  };
 
   useEffect(() => {
     const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -79,21 +79,21 @@ export default function LoginModal({ open, children, onClose, onSignup, onForget
       // Reset username and password when modal closes
       setEmail('');
       setPassword('');
-      setError('')
+      setError('');
     }
   }, [open]);
 
-  if (!open) return null
+  if (!open) return null;
 
   const MODAL_STYLES = getModalStyles(isDesktop);
 
   const sendLoginRequest = async (email, password) => {
-    console.log("Logging in with username:", email);
-    console.log("Logging in with password:", password);
+    console.log('Logging in with username:', email);
+    console.log('Logging in with password:', password);
     setError(null);
     const loginData = {
       email: email,
-      password: password
+      password: password,
     };
 
     try {
@@ -105,53 +105,86 @@ export default function LoginModal({ open, children, onClose, onSignup, onForget
       console.error('Login error:', error);
       setError('Unknown error');
     }
-  }
+  };
 
   return ReactDom.createPortal(
     <>
       <div style={OVERLAY_STYLES} />
       <div style={MODAL_STYLES}>
-        <CancelIcon onClick={onClose} sx={{ color: "#444444" }} style={{ cursor: 'pointer', marginLeft: 'auto' }} />
-        <h3 className='text-black text-5xl font-bold my-2 text-left' style={{ marginTop: '1px' }}>MANU</h3>
+        <CancelIcon onClick={onClose} sx={{ color: '#444444' }} style={{ cursor: 'pointer', marginLeft: 'auto' }} />
+        <h3 className="text-black text-5xl font-bold my-2 text-left" style={{ marginTop: '1px' }}>
+          MANU
+        </h3>
         {children}
-        <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '3px' }}>Email</h5>
+        <h5 className="text-[#666666] text-left font-normal" style={{ marginTop: '3px' }}>
+          Email
+        </h5>
         <Box
           sx={{
             width: '710px',
             maxWidth: '100%',
             borderRadius: '12px',
             marginTop: '1px',
-            marginBottom: '10px'
+            marginBottom: '10px',
           }}
         >
-          <TextField fullWidth id="email" value={email}
-            onChange={(e) => setEmail(e.target.value)} onKeyDown={onKeyDown} />
+          <TextField
+            fullWidth
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={onKeyDown}
+          />
         </Box>
-        <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '3px' }}>Password</h5>
+        <h5 className="text-[#666666] text-left font-normal" style={{ marginTop: '3px' }}>
+          Password
+        </h5>
         <Box
           sx={{
             width: '710px',
             maxWidth: '100%',
             borderRadius: '12px',
-            marginTop: '1px'
+            marginTop: '1px',
           }}
         >
-          <TextField fullWidth id="password" value={password}
-            onChange={(e) => setPassword(e.target.value)} onKeyDown={onKeyDown} />
+          <TextField
+            fullWidth
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={onKeyDown}
+          />
         </Box>
-        <h5 onClick={onForget} className='text-[#111111] text-right font-medium border-b border-black ml-auto' style={{ marginTop: '10px' }}>Forget your password</h5>
+        <h5
+          onClick={onForget}
+          className="text-[#111111] text-right font-medium border-b border-black ml-auto"
+          style={{ marginTop: '10px' }}
+        >
+          Forget your password
+        </h5>
         <div className="w-[705px] items-center justify-center mt-8 mb-0">
-          <button onClick={() => sendLoginRequest(email, password)} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded hover:text-white hover:bg-[#FFC6B4]">Login</button>
+          <button
+            onClick={() => sendLoginRequest(email, password)}
+            className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded hover:text-white hover:bg-[#FFC6B4]"
+          >
+            Login
+          </button>
         </div>
-        <div className='flex justify-center items-center w-full'>
-          <h5 className='text-[#111111] text-center font-light' style={{ marginTop: '10px' }}>Don’t have an account?</h5>
-          <h5 onClick={onSignup} className='text-[#111111] text-center font-semibold border-b border-black ml-2' style={{ marginTop: '10px' }}>Signup</h5>
+        <div className="flex justify-center items-center w-full">
+          <h5 className="text-[#111111] text-center font-light" style={{ marginTop: '10px' }}>
+            Don’t have an account?
+          </h5>
+          <h5
+            onClick={onSignup}
+            className="text-[#111111] text-center font-semibold border-b border-black ml-2"
+            style={{ marginTop: '10px' }}
+          >
+            Signup
+          </h5>
         </div>
-        {error && (
-          <div style={errorStyles}>{error}</div>
-        )}
+        {error && <div style={errorStyles}>{error}</div>}
       </div>
     </>,
-    document.getElementById('portal')
-  )
+    document.getElementById('portal'),
+  );
 }
