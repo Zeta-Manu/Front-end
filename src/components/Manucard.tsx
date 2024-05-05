@@ -1,8 +1,17 @@
+import React from 'react';
 import ExpandCircleDownIcon from '@mui/icons-material/ExpandCircleDown';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 
-const Manucard = ({ imageSrc, title, description, to }) => {
+interface ManucardProps {
+    imageSrc: string;
+    title: string;
+    description: string;
+    to: string;
+}
+
+
+const Manucard: React.FC<ManucardProps> = ({ imageSrc, title, description, to }) => {
     return (
         <div className="w-80 h-96 flex flex-col rounded-2xl mx-5">
             <div className="relative h-1/3 bg-opacity-0">

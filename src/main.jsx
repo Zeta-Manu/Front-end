@@ -1,9 +1,9 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import App from './App'
-import './index.css'
-import { AuthProvider } from './AuthProvider';
+import App from './App';
+import './index.css';
+import { AuthProvider } from './components/AuthProvider';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -13,4 +13,4 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       </BrowserRouter>
     </AuthProvider>
   </React.StrictMode>,
-)
+);

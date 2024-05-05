@@ -33,3 +33,5 @@ predictionInstance.postPrediction = async (formData: FormData | object, accessTo
     throw error;
   }
 }
+
+export type { PredictionInstance };

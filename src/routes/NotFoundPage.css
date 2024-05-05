@@ -1,0 +1,19 @@
+.huge-font {
+    font-size: 12rem;
+    font-weight: bolder;
+    font-family: monospace;
+    color:#C5DFE7;
+}
+
+.not-found-body {
+    font-size: 5rem;
+}
+
+.go-back-button {
+    background-color: beige;
+    color: white;
+    padding: 1rem 2rem;
+    font-size: 5rem;
+    margin-top: 4rem;
+    border-radius: 1rem;
+}

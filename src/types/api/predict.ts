@@ -6,4 +6,12 @@ interface PredictionInstanceMethods {
 
 interface PredictionInstance extends AxiosInstance, PredictionInstanceMethods { };
 
-export type { PredictionInstance };
+type PredictResult = {
+  class: string;
+  translated: string;
+  average: number;
+  sum: number;
+  count: number;
+}
+
+export type { PredictionInstance, PredictResult};

@@ -5,7 +5,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 
-import { useAuth } from '../../AuthProvider';
+import { useAuth } from '../AuthProvider';
 import { authInstance } from '../../services/api/auth';
 
 const DESKTOP_MEDIA_QUERY = '(min-width: 768px)';

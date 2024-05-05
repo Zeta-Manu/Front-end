@@ -21,7 +21,11 @@
       "@components/*": ["components/*"],
       "@services/*": ["services/*"],
       "@customTypes/*": ["types/*"],
-      "@hooks/*": ["hooks/*"]
+      "@hooks/*": ["hooks/*"],
+      "@assets/*": ["assets/*"],
+      "@pages/*": ["pages/*"],
+      "@utils/*": ["utils/*"],
+      "@routes/*": ["routes/*"]
     },
 
     /* Linting */
