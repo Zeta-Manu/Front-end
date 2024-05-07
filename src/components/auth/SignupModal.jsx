@@ -128,36 +128,6 @@ export default function SignupModal({
     }
   };
 
-  const validate = (passwordRepeat, password) => {
-    if (passwordRepeat !== password) {
-      setLocalRegisterError('Password entries must match');
-      return false;
-    } else if (password.length < 8) {
-      //min length 8 char
-      setLocalRegisterError('Password must contain at least 8 characters');
-      return false;
-    } else if (!/\d/.test(password)) {
-      //not contain number
-      setLocalRegisterError('Password must contain at least 1 number');
-      return false;
-    } else if (!/[!@#$%^&*]/.test(password)) {
-      //not contain special char
-      setLocalRegisterError('Password must contain at least 1 specific character');
-      return false;
-    } else if (!/[A-Z]/.test(password)) {
-      //no uppercase
-      setLocalRegisterError('Password must contain at least 1 uppercase letter');
-      return false;
-    } else if (!/[a-z]/.test(password)) {
-      //no lowercase
-      setLocalRegisterError('Password must contain at least 1 lowercase letter');
-      return false;
-    } else {
-      setLocalRegisterError(null);
-      return true;
-    }
-  };
-
   if (!open) return null;
 
   return ReactDom.createPortal(
