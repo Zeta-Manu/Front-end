@@ -8,8 +8,10 @@ import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
 import SignupSchema from '../../services/validation';
+import { authInstance } from '../../services/api/auth';
 
 const DESKTOP_MEDIA_QUERY = '(min-width: 768px)';
+
 function getModalStyles(isDesktop) {
   return {
     display: 'flex',
