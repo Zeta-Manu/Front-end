@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ReactMediaRecorder, useReactMediaRecorder } from 'react-media-recorder';
-import Webcam from 'react-webcam';
 import { CircularProgressbar } from 'react-circular-progressbar';
 import 'react-circular-progressbar/dist/styles.css';
 import PropTypes from 'prop-types';
 
 import { useAuth } from '@components/AuthProvider';
 import { PredictResult } from '@customTypes/api/predict';
+import WebcamComponent from '@components/WebcamComponent';
+import { useWebcam } from '@hooks/useWebcam';
+import RecordingToggleButton from '@components/RecordingToggleButton';
 
 const errorStyles = {
   padding: '15px 0',
@@ -39,8 +41,7 @@ VideoPreview.propTypes = {
 };
 
 const Prediction: React.FC = () => {
-  const webcamRef = useRef<Webcam>(null);
-  const [streamActive, setStreamActive] = useState<boolean>(false);
+  const { streamActive } = useWebcam();
   const { startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
     audio: false,
     video: true,
@@ -53,10 +54,6 @@ const Prediction: React.FC = () => {
   const [trackReq, setTrackReq] = useState<boolean>(false);
 
   const { access_token, userEmail } = useAuth();
-
-  const handleStream = async () => {
-    setStreamActive((prevState) => !prevState);
-  };
 
   const [stream, setStream] = useState<MediaStream | null>(null);
 
@@ -81,33 +78,6 @@ const Prediction: React.FC = () => {
     };
   }, [stream]);
 
-  const handlestartRecording = async () => {
-    try {
-      await startRecording();
-      console.log('Recording started');
-      setAwaitUpload(true);
-    } catch (error) {
-      console.error('Error starting recording', error);
-    }
-  };
-  /*
-    const handleStopRecording = async () => {
-        try {
-            const recordedBlob = await stopRecording();
-            if (!recordedBlob) {
-                console.error('No recorded blob found');
-                return;
-            }
-            const blobUrl = URL.createObjectURL(recordedBlob);
-            setRecordBlobUrl(blobUrl);
-            console.log('Recording stopped, blob:', recordedBlob);
-            uploadVideo(recordedBlob);
-            downloadBlob(recordedBlob);
-        } catch (error) {
-            console.error('Error stopping recording', error);
-        }
-    };*/
-
   const processResult = (result: PredictResult[]) => {
     if (result.length <= 3) {
       setTopResults(result);
@@ -117,19 +87,6 @@ const Prediction: React.FC = () => {
       //top3
       const topThreeResults = sortedResults.slice(0, 3);
       setTopResults(topThreeResults);
-    }
-  };
-
-  const handleStopRecording = async () => {
-    try {
-      await stopRecording();
-      console.log('Recording stopped, blob:', mediaBlobUrl);
-      setAwaitUpload(false);
-      setTrackReq(true);
-      // uploadVideo(mediaBlobUrl);
-      // downloadBlob(mediaBlobUrl);
-    } catch (error) {
-      console.error('Error stopping recording', error);
     }
   };
 
@@ -186,15 +143,6 @@ const Prediction: React.FC = () => {
       });
   };
 
-  /*const downloadBlob = (blobUrl) => {
-        const a = document.createElement("a");
-        a.href = blobUrl;
-        a.download = "recorded-video.mp4";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    };*/
-
   const getColor = (confident: number): string => {
     let opacity;
     if (confident < 50) {
@@ -218,57 +166,37 @@ const Prediction: React.FC = () => {
     setConfident(Math.round(topResults[index].average * 100));
   };
 
+  // Fix: Add new state for the button
+  const handleToggleRecording = async () => {
+    try {
+      if (streamActive) {
+        await stopRecording();
+        console.log('Recording stopped');
+      } else {
+        await startRecording();
+        console.log('Recording started');
+      }
+      setAwaitUpload(true);
+      setError('');
+    } catch (error) {
+      setError('An error occurred. Please try again. ');
+      console.error('Recording error:', error);
+    }
+  };
+
   return (
     <div className="flex w-screen h-screen">
       <div className="flex flex-col w-2/3 mt-20 mx-10">
         <div className="flex w-full h-3/4 overflow-hidden bg-[#9EB3CD] border-black border-2 -mx-4 mt-2 relative">
-          <ReactMediaRecorder
-            video
-            render={() => {
-              if (streamActive) {
-                return (
-                  <div className="flex justify-center items-center w-[98%]">
-                    <Webcam
-                      audio={false}
-                      ref={webcamRef}
-                      screenshotFormat="image/jpeg"
-                      videoConstraints={{ facingMode: 'user' }}
-                    />
-                  </div>
-                );
-              }
-              return (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <h1 className="text-center text-black font-italic">Waiting for input...</h1>
-                </div>
-              );
-            }}
-          />
+          <ReactMediaRecorder video render={() => <WebcamComponent />} />
         </div>
         <div className="w-full h-1/4 bottom-0 flex justify-center items-center -mx-4 mt-0 ">
-          <button
-            onClick={handleStream}
-            className="rounded mx-8 flex-1 bg-[#03a9f4] border-2 border-[#03a9f4] text-white hover:bg-white hover:text-[#03a9f4]"
-          >
-            {streamActive ? 'Turn off' : 'Turn on'}
-          </button>
-          {/* when stream active=> display Start Recording and Stop Recording Button */}
-          {streamActive && (
-            <button
-              onClick={handlestartRecording}
-              className="rounded flex-1 mx-2 bg-blue-800 text-white border-2 border-blue-800 hover:bg-white hover:text-blue-800"
-            >
-              Start Recording
-            </button>
-          )}
-          {streamActive && (
-            <button
-              onClick={handleStopRecording}
-              className="rounded flex-1 mx-2 bg-blue-800 text-white border-2 border-blue-800 hover:bg-white hover:text-blue-800"
-            >
-              Stop Recording
-            </button>
-          )}
+          <div className="w-full h-1/4 bottom-0 flex justify-center item-center -mx-4 mt-0">
+            <RecordingToggleButton
+              onToggle={handleToggleRecording}
+              className="rounded mx-8 flex-1 bg-[#03a9f4] border-2 border-[#03a9f4] text-white hover:bg-white hover:text-[#03a9f4]"
+            />
+          </div>
         </div>
         <button onClick={() => setShowRecordedVideo(!showRecordedVideo)}>Preview</button>
         {error && <div style={errorStyles}>{error}</div>}
