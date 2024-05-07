@@ -6,17 +6,11 @@ const AuthContext = createContext();
 export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(
-    localStorage.getItem('isLoggedIn') === 'true'
-  );
+  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem('isLoggedIn') === 'true');
 
-  const [userEmail, setUserEmail] = useState(
-    localStorage.getItem('userEmail') || ''
-  );
+  const [userEmail, setUserEmail] = useState(localStorage.getItem('userEmail') || '');
 
-  const [access_token, setAccess_token] = useState(
-    localStorage.getItem('access_token') || ''
-  );
+  const [access_token, setAccess_token] = useState(localStorage.getItem('access_token') || '');
 
   const logout = () => {
     setIsLoggedIn(false);
