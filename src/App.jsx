@@ -11,6 +11,7 @@ import { useAuth } from './components/AuthProvider';
 import AuthNavbar from './components/AuthNavbar';
 import Quiz from './routes/Quiz';
 import NotFoundPage from './routes/NotFound';
+import ProtectedRoutes from './utils/ProtectedRoutes';
 
 function App() {
   const { isLoggedIn } = useAuth() || { isLoggedIn: false };
@@ -23,7 +24,9 @@ function App() {
         <Route path="/recognition" element={<Recognition />} />
         <Route path="/home" element={<Home />} />
         <Route path="/translation" element={<Translation />} />
-        <Route path="/prediction" element={<Prediction />} />
+        <Route element={<ProtectedRoutes/>}>
+          <Route path="/prediction" element={<Prediction />} />
+        </Route>
         <Route path="/learning" element={<Learning />} />
         <Route path="/quiz" element={<Quiz />} />
         <Route path="/*" element={<NotFoundPage />} />
