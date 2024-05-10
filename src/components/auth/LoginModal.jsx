@@ -118,7 +118,27 @@ export default function LoginModal({ open, children, onClose, onSignup, onForget
       onClose();
     } catch (error) {
       console.error('Login error:', error);
-      setError('Unknown error');
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            setError('Invalid Password or Missing Parameter');
+            break;
+          case 401:
+            setError('Not Authorized');
+            break;
+          case 403:
+            setError('User Not Confirm');
+            break;
+          case 404:
+            setError('User Not Found');
+            break;
+          case 500:
+            setError('Internal Server Error');
+            break;
+          default:
+            setError('Unknown error');
+        }
+      }
     }
   };
 
