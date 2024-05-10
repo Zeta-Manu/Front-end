@@ -45,6 +45,12 @@ authInstance.postConfirmSignUp = async (body: ConfirmSignUpBody) => {
         const response = await authInstance.post('/api/v2/confirm', JSON.stringify(body), config);
         if (response.status === 200) {
             return response.data;
+        } else if (response.status === 400) {
+            console.error("400 Bad Request:", response.statusText);
+        } else if (response.status === 408) {
+            console.error("408 Request Timeout:", response.statusText);
+        } else {
+            console.error("An unexpected error occurred:", response.statusText);
         }
     } catch (error) {
         throw error;
@@ -63,6 +69,16 @@ authInstance.postResendConfirm = async (body: EmailBody) => {
         const response = await authInstance.post('/api/v2/resend-confirm', JSON.stringify(body), config);
         if (response.status === 200) {
             return response.data;
+        } else if (response.status === 401) {
+            console.error("401 Not Authorized:", response.statusText);
+        } else if (response.status === 403) {
+            console.error("401 User Not Confirm:", response.statusText);
+        } else if (response.status === 404) {
+            console.error("401 User Not Found:", response.statusText);
+        } else if (response.status === 500) {
+            console.error("500 Internal Server Error:", response.statusText);
+        } else {
+            console.error("An unexpected error occurred:", response.statusText);
         }
     } catch (error) {
         throw error;
@@ -97,7 +113,7 @@ authInstance.postChangePassword = async (body: ChangePasswordBody, accessToken: 
     };
 
     try {
-        const response = await authInstance.post('/api/v2/signup', JSON.stringify(body), config);
+        const response = await authInstance.post('/api/v2/change-password', JSON.stringify(body), config);
         if (response.status === 200) {
             return response.data;
         } else if (response.status === 400) {
@@ -123,9 +139,15 @@ authInstance.postForgetPassword = async (body: EmailBody) => {
     };
 
     try {
-        const response = await authInstance.post('/api/v2/login', JSON.stringify(body), config);
+        const response = await authInstance.post('/api/v2/forgot-password', JSON.stringify(body), config);
         if (response.status === 200) {
             return response.data;
+        } else if (response.status === 400) {
+            console.error("400 Bad Request:", response.statusText);
+        } else if (response.status === 500) {
+            console.error("500 Internal Server Error:", response.statusText);
+        } else {
+            console.error("An unexpected error occurred:", response.statusText);
         }
     } catch (error) {
         throw error;
@@ -141,9 +163,15 @@ authInstance.postConfirmForget = async (body: ConfirmForgotBody) => {
     };
 
     try {
-        const response = await authInstance.post('/api/v2/login', JSON.stringify(body), config);
+        const response = await authInstance.post('/api/v2/confirm-forgot', JSON.stringify(body), config);
         if (response.status === 200) {
             return response.data;
+        } else if (response.status === 400) {
+            console.error("400 Bad Request:", response.statusText);
+        } else if (response.status === 500) {
+            console.error("500 Internal Server Error:", response.statusText);
+        } else {
+            console.error("An unexpected error occurred:", response.statusText);
         }
     } catch (error) {
         throw error;
