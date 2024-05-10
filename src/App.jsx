@@ -12,6 +12,7 @@ import AuthNavbar from './components/AuthNavbar';
 import Quiz from './routes/Quiz';
 import NotFoundPage from './routes/NotFound';
 import ProtectedRoutes from './utils/ProtectedRoutes';
+import History from './routes/History';
 
 function App() {
   const { isLoggedIn } = useAuth() || { isLoggedIn: false };
@@ -26,6 +27,7 @@ function App() {
         <Route path="/translation" element={<Translation />} />
         <Route element={<ProtectedRoutes/>}>
           <Route path="/prediction" element={<Prediction />} />
+          <Route path="/history" element={<History />} />
         </Route>
         <Route path="/learning" element={<Learning />} />
         <Route path="/quiz" element={<Quiz />} />

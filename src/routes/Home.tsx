@@ -19,7 +19,7 @@ const Home = () => {
         imageSrc={stat_icon}
         title="Stat"
         description="Do you remember how many signs have you mastered in your life?"
-        to="/recognition"
+        to="/history"
       />
     </div>
   );
