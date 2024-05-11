@@ -53,7 +53,7 @@ ResetPasswordModal.propTypes = {
     onResettoLogin: PropTypes.func
 };
 
-export default function ResetPasswordModal({ open, children, onClose, verificationcode, email, onResettoLogin}) {
+export default function ResetPasswordModal({ open, children, onClose, verificationcode, email, onResettoLogin }) {
     const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
     const [newpwd, setnewpwd] = useState('');
     const [confirmpwd, setconfirmpwd] = useState('');
@@ -82,8 +82,13 @@ export default function ResetPasswordModal({ open, children, onClose, verificati
             email: email,
             new_password: newpwd
         };
+
+        if (!validate(newpwd, confirmpwd)) {
+            return;
+        }
+
         try {
-            const response = await authInstance.postConfirmForget (resetData);
+            const response = await authInstance.postConfirmForget(resetData);
             onResettoLogin()
             console.log('reset password success')
             console.log('Response:', response);
@@ -101,6 +106,31 @@ export default function ResetPasswordModal({ open, children, onClose, verificati
                         setError('Unknown error');
                 }
             }
+        }
+    }
+
+    const validate = (passwordRepeat, password) => {
+        if (passwordRepeat !== password) {
+            setError("Password entries must match")
+            return false;
+        } else if (password.length < 8) { //min length 8 char
+            setError("Password must contain at least 8 characters")
+            return false;
+        } else if (!/\d/.test(password)) { //not contain number
+            setError("Password must contain at least 1 number")
+            return false;
+        } else if (!/[!@#$%^&*]/.test(password)) { //not contain special char
+            setError("Password must contain at least 1 specific character")
+            return false;
+        } else if (!/[A-Z]/.test(password)) { //no uppercase
+            setError("Password must contain at least 1 uppercase letter")
+            return false;
+        } else if (!/[a-z]/.test(password)) { //no lowercase
+            setError("Password must contain at least 1 lowercase letter")
+            return false;
+        } else {
+            setError(null);
+            return true;
         }
     }
 

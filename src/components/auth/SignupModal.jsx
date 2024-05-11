@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDom from 'react-dom';
 import PropTypes from 'prop-types';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -6,6 +6,12 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 /*import SignupSchema from '../../services/validation';*/
 import { authInstance } from '../../services/api/auth';
@@ -71,6 +77,16 @@ export default function SignupModal({
   const [localRegisterError, setLocalRegisterError] = useState();
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [externalRegisterError, setExternalRegisterError] = useState();
+  const [showPassword, setShowPassword] = React.useState(false);
+  const [showpasswordRepeat, setShowPasswordRepeat] = React.useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleClickShowPasswordRepeat = () => setShowPasswordRepeat((show) => !show);
+
+  const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+  };
 
   useEffect(() => {
     const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -86,17 +102,17 @@ export default function SignupModal({
       setLocalRegisterError("Please agree to the Terms and Conditions");
       return;
     }
-  
+
     const registerData = {
       email: email,
       name: username,
       password: password,
     };
-  
+
     if (!validate(passwordRepeat, password)) {
       return;
     }
-  
+
     try {
       const response = await authInstance.postSignUp(registerData);
       console.log('Signup with username:', username);
@@ -132,6 +148,8 @@ export default function SignupModal({
       setLocalRegisterError();
       setPasswordRepeat('');
       setemail('');
+      setShowPassword(false);
+      setShowPasswordRepeat(false);
     }
   }, [open]);
 
@@ -230,13 +248,28 @@ export default function SignupModal({
                 marginTop: '1px',
               }}
             >
-              <TextField
-                fullWidth
-                id="password"
-                onKeyDown={onKeyDown}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <FormControl fullWidth>
+                <OutlinedInput
+                  id="outlined-adornment-password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                  onKeyDown={onKeyDown}
+                />
+              </FormControl>
             </Box>
           </div>
           <div style={{ width: 'calc(50% - 8px)' }}>
@@ -251,13 +284,28 @@ export default function SignupModal({
                 marginTop: '1px',
               }}
             >
-              <TextField
-                fullWidth
-                id="repassword"
-                onKeyDown={onKeyDown}
-                value={passwordRepeat}
-                onChange={(e) => setPasswordRepeat(e.target.value)}
-              />
+              <FormControl fullWidth>
+                <OutlinedInput
+                  id="outlined-adornment-passwordRepeat"
+                  type={showpasswordRepeat ? 'text' : 'password'}
+                  value={passwordRepeat}
+                  onChange={(e) => setPasswordRepeat(e.target.value)}
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPasswordRepeat}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {showpasswordRepeat ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                  label="Password"
+                  onKeyDown={onKeyDown}
+                />
+              </FormControl>
             </Box>
           </div>
         </div>

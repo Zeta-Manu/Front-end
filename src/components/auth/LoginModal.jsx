@@ -95,6 +95,7 @@ export default function LoginModal({ open, children, onClose, onSignup, onForget
       setEmail('');
       setPassword('');
       setError('');
+      setShowPassword(false);
     }
   }, [open]);
 
