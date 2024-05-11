@@ -5,6 +5,8 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
+import { authInstance } from '../../services/api/auth';
+
 const DESKTOP_MEDIA_QUERY = '(min-width: 768px)';
 function getModalStyles(isDesktop) {
     return {
@@ -40,7 +42,7 @@ const errorStyles = {
     padding: '15px 0',
     fontSize: '13px',
     color: 'red',
-  };
+};
 
 ForgetModal.propTypes = {
     open: PropTypes.bool.isRequired,
@@ -71,28 +73,24 @@ export default function ForgetModal({ open, children, onClose, openVerificationM
             email: email
         };
         try {
-            const response = await fetch(import.meta.env.VITE_AUTH_ENDPOINT+'/forgot-password', {
-                method: 'POST',
-                headers: {
-                    'accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify( forgetData )
-            });
-            if (response.ok) {
-                console.log('Forget password request sent successfully!');
-                openVerificationModal(email);
-            } else if (response.status === 400) {
-                setError("Bad Request")
-            } else if (response.status === 500) {
-                setError("Internal Server Error")
-            }
-            else {
-                setError('Unknown error');
-            }
+            const response = await authInstance.postForgetPassword(forgetData);
+            console.log('Forget password request sent successfully!');
+            console.log('Response:', response);
+            openVerificationModal(email);
         } catch (error) {
             console.error('Forget request error:', error);
-            throw error;
+            if (error.response) {
+                switch (error.response.status) {
+                    case 400:
+                        setError('Bad Request');
+                        break;
+                    case 500:
+                        setError('Internal Server Error');
+                        break;
+                    default:
+                        setError('Unknown error');
+                }
+            }
         }
     }
 

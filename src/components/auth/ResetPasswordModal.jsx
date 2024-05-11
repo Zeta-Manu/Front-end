@@ -5,6 +5,8 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
+import { authInstance } from '../../services/api/auth';
+
 const DESKTOP_MEDIA_QUERY = '(min-width: 768px)';
 function getModalStyles(isDesktop) {
     return {
@@ -81,28 +83,24 @@ export default function ResetPasswordModal({ open, children, onClose, verificati
             new_password: newpwd
         };
         try {
-            const response = await fetch(import.meta.env.VITE_AUTH_ENDPOINT+'/confirm-forgot', {
-                method: 'POST',
-                headers: {
-                    'accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(resetData),
-            });
-            if (response.ok) {
-                // Account confirmed successfully=>open login modal
-                onResettoLogin()
-                console.log('reset password success')
-            } else if (response.status === 400) {
-                setError('Bad request');
-            } else if (response.status === 500) {
-                setError('Internal Server Error');
-            } else {
-                setError('An unexpected error occurred. Please try again.');
-            }
+            const response = await authInstance.postConfirmForget (resetData);
+            onResettoLogin()
+            console.log('reset password success')
+            console.log('Response:', response);
         } catch (error) {
             console.error('Registration error:', error);
-            throw error;
+            if (error.response) {
+                switch (error.response.status) {
+                    case 400:
+                        setError('Bad Request');
+                        break;
+                    case 500:
+                        setError('Internal Server Error');
+                        break;
+                    default:
+                        setError('Unknown error');
+                }
+            }
         }
     }
 

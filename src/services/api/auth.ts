@@ -154,6 +154,7 @@ authInstance.postForgetPassword = async (body: EmailBody) => {
             console.error("An unexpected error occurred:", response.statusText);
         }
     } catch (error) {
+        console.error('Forget pwd error:', error);
         throw error;
     }
 }
@@ -178,6 +179,7 @@ authInstance.postConfirmForget = async (body: ConfirmForgotBody) => {
             console.error("An unexpected error occurred:", response.statusText);
         }
     } catch (error) {
+        console.error('Reset pwd error:', error);
         throw error;
     }
 }
