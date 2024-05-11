@@ -1,9 +1,16 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDom from 'react-dom'
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+
+import FormControl from '@mui/material/FormControl';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
 import { authInstance } from '../../services/api/auth';
 
@@ -58,6 +65,17 @@ export default function ResetPasswordModal({ open, children, onClose, verificati
     const [newpwd, setnewpwd] = useState('');
     const [confirmpwd, setconfirmpwd] = useState('');
     const [error, setError] = useState('');
+
+    const [showNewpwd, setShowNewpwd] = React.useState(false);
+    const [showconfirmpwd, setShowconfirmpwd] = React.useState(false);
+
+    const handleClickShowNewpwd = () => setShowNewpwd((show) => !show);
+
+    const handleClickShowconfirmpwd = () => setShowconfirmpwd((show) => !show);
+
+    const handleMouseDownPassword = (event) => {
+        event.preventDefault();
+    };
 
     useEffect(() => {
         const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -155,8 +173,27 @@ export default function ResetPasswordModal({ open, children, onClose, verificati
                         marginBottom: '10px',
                     }}
                 >
-                    <TextField fullWidth id="newpwd"
-                        value={newpwd} onChange={(e) => setnewpwd(e.target.value)} />
+                    <FormControl fullWidth>
+                        <OutlinedInput
+                            id="outlined-adornment-newpwd"
+                            type={showNewpwd ? 'text' : 'password'}
+                            value={newpwd}
+                            onChange={(e) => setnewpwd(e.target.value)}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowNewpwd}
+                                        onMouseDown={handleMouseDownPassword}
+                                        edge="end"
+                                    >
+                                        {showNewpwd ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            label="Password"
+                        />
+                    </FormControl>
                 </Box>
                 <h5 className='text-[#666666] text-left font-normal' style={{ marginTop: '12px' }}>Confirm Password</h5>
                 <Box
@@ -168,8 +205,27 @@ export default function ResetPasswordModal({ open, children, onClose, verificati
                         marginBottom: '10px',
                     }}
                 >
-                    <TextField fullWidth id="confirmpwd"
-                        value={confirmpwd} onChange={(e) => setconfirmpwd(e.target.value)} />
+                    <FormControl fullWidth>
+                        <OutlinedInput
+                            id="outlined-adornment-confirmpwd"
+                            type={showconfirmpwd ? 'text' : 'password'}
+                            value={confirmpwd}
+                            onChange={(e) => setconfirmpwd(e.target.value)}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label="toggle password visibility"
+                                        onClick={handleClickShowconfirmpwd}
+                                        onMouseDown={handleMouseDownPassword}
+                                        edge="end"
+                                    >
+                                        {showconfirmpwd ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            label="Password"
+                        />
+                    </FormControl>
                 </Box>
                 <div className="flex justify-center w-full mt-5">
                     <button onClick={() => sendResetpassword(verificationcode, email, newpwd)} className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded-full hover:text-white hover:bg-[#FFC6B4]">Send</button>
@@ -177,7 +233,7 @@ export default function ResetPasswordModal({ open, children, onClose, verificati
                 {error && (
                     <div style={errorStyles}>{error}</div>
                 )}
-            </div>
+            </div >
         </>,
         document.getElementById('portal')
     )
