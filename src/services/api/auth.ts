@@ -29,8 +29,9 @@ authInstance.postSignUp = async (body: SignUpBody) => {
             console.error("An unexpected error occurred:", response.statusText);
         }
     } catch (error) {
+        console.error('Registration error:', error);
         throw error;
-    } 
+    }
 }
 
 authInstance.postConfirmSignUp = async (body: ConfirmSignUpBody) => {
@@ -53,8 +54,9 @@ authInstance.postConfirmSignUp = async (body: ConfirmSignUpBody) => {
             console.error("An unexpected error occurred:", response.statusText);
         }
     } catch (error) {
+        console.error('Confirm account error:', error);
         throw error;
-    } 
+    }
 }
 
 authInstance.postResendConfirm = async (body: EmailBody) => {
@@ -72,17 +74,18 @@ authInstance.postResendConfirm = async (body: EmailBody) => {
         } else if (response.status === 401) {
             console.error("401 Not Authorized:", response.statusText);
         } else if (response.status === 403) {
-            console.error("401 User Not Confirm:", response.statusText);
+            console.error("403 User Not Confirm:", response.statusText);
         } else if (response.status === 404) {
-            console.error("401 User Not Found:", response.statusText);
+            console.error("404 User Not Found:", response.statusText);
         } else if (response.status === 500) {
             console.error("500 Internal Server Error:", response.statusText);
         } else {
             console.error("An unexpected error occurred:", response.statusText);
         }
     } catch (error) {
+        console.error('Resend error:', error);
         throw error;
-    } 
+    }
 }
 
 authInstance.postLogin = async (body: LoginBody) => {
@@ -99,8 +102,9 @@ authInstance.postLogin = async (body: LoginBody) => {
             return response.data;
         }
     } catch (error) {
+        console.error('Login error:', error);
         throw error;
-    } 
+    }
 }
 
 authInstance.postChangePassword = async (body: ChangePasswordBody, accessToken: string) => {
@@ -127,7 +131,7 @@ authInstance.postChangePassword = async (body: ChangePasswordBody, accessToken: 
         }
     } catch (error) {
         throw error;
-    } 
+    }
 }
 
 authInstance.postForgetPassword = async (body: EmailBody) => {
@@ -151,7 +155,7 @@ authInstance.postForgetPassword = async (body: EmailBody) => {
         }
     } catch (error) {
         throw error;
-    } 
+    }
 }
 
 authInstance.postConfirmForget = async (body: ConfirmForgotBody) => {
@@ -175,7 +179,7 @@ authInstance.postConfirmForget = async (body: ConfirmForgotBody) => {
         }
     } catch (error) {
         throw error;
-    } 
+    }
 }
 
 export { authInstance };

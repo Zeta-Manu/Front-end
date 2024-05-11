@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import ReactDom from 'react-dom';
 import PropTypes from 'prop-types';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -7,7 +7,7 @@ import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-import SignupSchema from '../../services/validation';
+/*import SignupSchema from '../../services/validation';*/
 import { authInstance } from '../../services/api/auth';
 
 const DESKTOP_MEDIA_QUERY = '(min-width: 768px)';
@@ -53,9 +53,7 @@ SignupModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   children: PropTypes.node,
   onLogin: PropTypes.func.isRequired,
-  onRegisterRequested: PropTypes.func,
-  openConfirmAccountModal: PropTypes.func,
-  externalRegisterError: PropTypes.string,
+  openConfirmAccountModal: PropTypes.func
 };
 
 export default function SignupModal({
@@ -63,9 +61,7 @@ export default function SignupModal({
   children,
   onClose,
   onLogin,
-  onRegisterRequested,
-  openConfirmAccountModal,
-  externalRegisterError,
+  openConfirmAccountModal
 }) {
   const [isDesktop, setIsDesktop] = useState(window.matchMedia(DESKTOP_MEDIA_QUERY).matches);
   const [username, setUsername] = useState('');
@@ -74,6 +70,7 @@ export default function SignupModal({
   const [email, setemail] = useState('');
   const [localRegisterError, setLocalRegisterError] = useState();
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [externalRegisterError, setExternalRegisterError] = useState();
 
   useEffect(() => {
     const mediaQueryList = window.matchMedia(DESKTOP_MEDIA_QUERY);
@@ -84,34 +81,48 @@ export default function SignupModal({
 
   const MODAL_STYLES = getModalStyles(isDesktop);
 
-  const onRegisterTrigger = useCallback(async () => {
+  const onRegisterTrigger = async (email, username, password) => {
+    if (!agreeTerms) {
+      setLocalRegisterError("Please agree to the Terms and Conditions");
+      return;
+    }
+  
+    const registerData = {
+      email: email,
+      name: username,
+      password: password,
+    };
+  
+    if (!validate(passwordRepeat, password)) {
+      return;
+    }
+  
     try {
-      SignupSchema.parse({
-        username,
-        password,
-        passwordRepeat,
-        email,
-        agreeTerms,
-      });
-      onRegisterRequested({ password, username, email });
+      const response = await authInstance.postSignUp(registerData);
       console.log('Signup with username:', username);
       console.log('Signup with password:', password);
       console.log('Signup with email:', email);
+      console.log('Response:', response);
       await openConfirmAccountModal(email);
     } catch (error) {
-      setLocalRegisterError(error.message);
+      console.error('Registration error:', error);
+      if (error.response) {
+        switch (error.response.status) {
+          case 400:
+            setExternalRegisterError('Invalid Password or Invalid Parameter');
+            break;
+          case 409:
+            setExternalRegisterError('Username Exists');
+            break;
+          case 500:
+            setExternalRegisterError('Internal Server Error');
+            break;
+          default:
+            setExternalRegisterError('Registration failed');
+        }
+      }
     }
-  }, [
-    agreeTerms,
-    passwordRepeat,
-    password,
-    username,
-    email,
-    localRegisterError,
-    externalRegisterError,
-    onRegisterRequested,
-    openConfirmAccountModal,
-  ]);
+  };
 
   useEffect(() => {
     if (!open) {
@@ -129,6 +140,32 @@ export default function SignupModal({
       onRegisterTrigger();
     }
   };
+
+  const validate = (passwordRepeat, password) => {
+    if (passwordRepeat !== password) {
+      setLocalRegisterError("Password entries must match")
+      return false;
+    } else if (password.length < 8) { //min length 8 char
+      setLocalRegisterError("Password must contain at least 8 characters")
+      return false;
+    } else if (!/\d/.test(password)) { //not contain number
+      setLocalRegisterError("Password must contain at least 1 number")
+      return false;
+    } else if (!/[!@#$%^&*]/.test(password)) { //not contain special char
+      setLocalRegisterError("Password must contain at least 1 specific character")
+      return false;
+    } else if (!/[A-Z]/.test(password)) { //no uppercase
+      setLocalRegisterError("Password must contain at least 1 uppercase letter")
+      return false;
+    } else if (!/[a-z]/.test(password)) { //no lowercase
+      setLocalRegisterError("Password must contain at least 1 lowercase letter")
+      return false;
+    } else {
+      setLocalRegisterError(null);
+      return true;
+    }
+  }
+
 
   if (!open) return null;
 
@@ -245,9 +282,10 @@ export default function SignupModal({
           }
         />
         {localRegisterError && <div style={errorStyles}>{localRegisterError}</div>}
+        {externalRegisterError && <div style={errorStyles}>{externalRegisterError}</div>}
         <div className="flex justify-center w-full mt-5">
           <button
-            onClick={onRegisterTrigger}
+            onClick={() => onRegisterTrigger(email, username, password)}
             className="bg-[#EB9980] text-white font-semibold py-5 px-40 rounded hover:text-white hover:bg-[#FFC6B4]"
           >
             Signup

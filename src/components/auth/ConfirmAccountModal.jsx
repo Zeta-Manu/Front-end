@@ -5,6 +5,8 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
+import { authInstance } from '../../services/api/auth';
+
 const DESKTOP_MEDIA_QUERY = '(min-width: 768px)';
 function getModalStyles(isDesktop) {
     return {
@@ -69,7 +71,7 @@ export default function ConfirmAccountModal({ open, children, onClose, email, on
         // Show resend message after 1 minutes=>60000 millisecond
         const resendTimeout = setTimeout(() => {
             setShowResendMessage(true);
-        },60000);
+        }, 60000);
 
         // Clear the timeout when component unmounts or state changes
         return () => clearTimeout(resendTimeout);
@@ -86,30 +88,27 @@ export default function ConfirmAccountModal({ open, children, onClose, email, on
             email: email
         };
         try {
-            const response = await fetch(import.meta.env.VITE_AUTH_ENDPOINT+'/confirm', {
-                method: 'POST',
-                headers: {
-                    'accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(confirmationData),
-            });
-            if (response.ok) {
-                // Account confirmed successfully=>open login modal
-                onConfirmtoLogin();
-                console.log('confirm account success')
-            } else if (response.status === 400) {
-                setError('Verification code is incorrect.');
-            } else if (response.status === 408) {
-                setError('Request timed out.');
-            } else {
-                setError('An unexpected error occurred. Please try again.');
-            }
+            const response = await authInstance.postConfirmSignUp(confirmationData);
+            // Account confirmed successfully=>open login modal
+            onConfirmtoLogin();
+            console.log('confirm account success')
+            console.log('Response:', response);
         } catch (error) {
             console.error('Registration error:', error);
-            throw error;
+            if (error.response) {
+                switch (error.response.status) {
+                    case 400:
+                        setError('Verification code is incorrect.');
+                        break;
+                    case 408:
+                        setError('Request timed out.');
+                        break;
+                    default:
+                        setError('An unexpected error occurred. Please try again.');
+                }
+            }
         }
-    }
+    };
 
     const resendConfirm = async (email) => {
         setErrorResend(null);
@@ -117,24 +116,29 @@ export default function ConfirmAccountModal({ open, children, onClose, email, on
             email: email
         };
         try {
-            const response = await fetch(import.meta.env.VITE_AUTH_ENDPOINT+'/resend-confirm', {
-                method: 'POST',
-                headers: {
-                    'accept': 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(resendData),
-            });
-            if (response.ok) {
-                console.log('resend success')
-            } else if (response.status === 500) {
-                setErrorResend('Internal Server Error');
-            }else {
-                setErrorResend('An unexpected error occurred. Please try again.');
-            }
+            const response = await authInstance.postResendConfirm(resendData);
+            console.log('resend success');
+            console.log('Response:', response);
         } catch (error) {
             console.error('Resend error:', error);
-            throw error;
+            if (error.response) {
+                switch (error.response.status) {
+                    case 401:
+                        setError('Not Authorized');
+                        break;
+                    case 403:
+                        setError('User Not Confirm');
+                        break;
+                    case 404:
+                        setError('User Not Found');
+                        break;
+                    case 500:
+                        setError('Internal Server Error');
+                        break;
+                    default:
+                        setError('An unexpected error occurred. Please try again.');
+                }
+            }
         }
     }
 

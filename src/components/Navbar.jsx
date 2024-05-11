@@ -19,7 +19,6 @@ const Navbar = () => {
   const [verificationOpen, setVerificationOpen] = useState(false);
   const [resetpasswordOpen, setResetpasswordOpen] = useState(false);
   const [confirmaccountOpen, setConfirmaccountOpen] = useState(false);
-  const [externalRegisterError, setExternalRegisterError] = useState();
   const [confirmAccountEmail, setConfirmAccountEmail] = useState('');
   const [resetPasswordCode, setResetPasswordCode] = useState('');
   const [forgetEmail, setForgetEmail] = useState('');
@@ -96,54 +95,6 @@ const Navbar = () => {
     setLoginOpen(true);
   };
 
-  const onRegisterRequested = async (registerData) => {
-    const { email, username, password } = registerData;
-    try {
-      const response = await registerReqUser(email, username, password);
-      if (response.status === 200) {
-        // Registration successful
-        setExternalRegisterError(null);
-      } else if (response.status === 400) {
-        // Invalid Password or Invalid Parameter
-        setExternalRegisterError('Invalid Password or Invalid Parameter');
-      } else if (response.status === 409) {
-        // Username Exists
-        setExternalRegisterError('Username Exists');
-      } else if (response.status === 500) {
-        // Internal Server Error
-        setExternalRegisterError('Internal Server Error');
-      } else {
-        setExternalRegisterError('Registration failed');
-      }
-    } catch (e) {
-      console.error('Registration error:', e);
-      setExternalRegisterError('Registration failed');
-    }
-  };
-
-  const registerReqUser = async (email, name, password) => {
-    const registerData = {
-      email: email,
-      name: name,
-      password: password,
-    };
-
-    try {
-      const response = await fetch(import.meta.env.VITE_AUTH_ENDPOINT + '/signup', {
-        method: 'POST',
-        headers: {
-          accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registerData),
-      });
-      return response;
-    } catch (error) {
-      console.error('Registration error:', error);
-      throw error;
-    }
-  };
-
   return (
     <div className="sticky top-0 flex justify-center items-center">
       <div className="w-2/3">
@@ -182,9 +133,7 @@ const Navbar = () => {
         open={signupOpen}
         onClose={closeSignupModal}
         onLogin={openLoginModal}
-        onRegisterRequested={onRegisterRequested}
         openConfirmAccountModal={openConfirmAccountModal}
-        externalRegisterError={externalRegisterError}
       />
       <ForgetModal open={forgetOpen} onClose={closeForgetModal} openVerificationModal={openVerificationModal} />
       <VerificationModal

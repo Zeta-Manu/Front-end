@@ -7,6 +7,7 @@ import { useAuth } from '../components/AuthProvider';
 const History = () => {
 
     const { userEmail } = useAuth();
+    const username = userEmail.split('@')[0]; 
 
     const userdata = [
         {
@@ -73,7 +74,7 @@ const History = () => {
             <div className='flex flex-col w-5/6 h-4/6 mt-16 mx-15 bg-[#FFFFFF] rounded-3xl border border-[#D9D9D9]'>
                 <div className='flex w-full h-1/7 border-b border-[#D9D9D9]'>
                     <AccountCircleIcon sx={{ fontSize: 38, color: '#D9D9D9', marginLeft: '1.25rem', marginY: '0.75rem' }} />
-                    <h1 className='my-4 ml-2 text-lg font-semibold text-black'>{userEmail}</h1>
+                    <h1 className='my-4 ml-2 text-lg font-semibold text-black'>{username}</h1>
                 </div>
                 <div className='flex flex-row w-full h-full'>
                     <div className='flex flex-col w-3/5 h-full items-center'>
