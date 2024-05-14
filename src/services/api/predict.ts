@@ -1,12 +1,12 @@
 import axios, { AxiosRequestConfig } from 'axios';
 
-import { PredictionInstance } from '@customTypes/api/predict';
+import { PredictResult, PredictionInstance } from '@customTypes/api/predict';
 
 const predictionInstance = axios.create({
   baseURL: import.meta.env.VITE_PREDICT_ENDPOINT,
 }) as PredictionInstance;
 
-predictionInstance.postPrediction = async (formData: FormData | object, accessToken: string) => {
+predictionInstance.postPrediction = (formData: FormData | object, accessToken: string) => {
   const config: AxiosRequestConfig = {
     headers: {
       'Accept': 'application/json',
@@ -15,23 +15,27 @@ predictionInstance.postPrediction = async (formData: FormData | object, accessTo
     timeout: 200000,
   };
 
-  try {
-    const response = await predictionInstance.post('/api/predict', formData, config);
-    if (response.status === 200) {
-      return response.data;
-    } else if (response.status === 401) {
-      console.error('Unauthorized Error:', response.statusText);
-      return response.status;
-    } else if (response.status === 500) {
-      console.error('Internal Server Error:', response.statusText);
-      return response.status;
-    } else {
-      console.error('Unexpected status code:', response.status);
-      return response.status;
-    }
-  } catch (error) {
-    throw error;
-  }
+    return new Promise<{ result: PredictResult[] }>((resolve, reject) => {
+      predictionInstance.post('/api/predict', formData, config)
+        .then(response => {
+          if (response.status === 200) {
+            resolve(response.data);
+          } else if (response.status === 401) {
+            console.error('Unauthorized Error:', response.statusText);
+            reject('Unauthorized Error'); 
+          } else if (response.status === 500) {
+            console.error('Internal Server Error:', response.statusText);
+            reject('Internal Server Error');
+          } else {
+            console.error('Unexpected status code:', response.status);
+            reject('Unexpected status code');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          reject(error);
+        });
+    });
 }
 
 export default predictionInstance;

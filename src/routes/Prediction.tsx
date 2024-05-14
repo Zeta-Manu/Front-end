@@ -8,7 +8,6 @@ import { useAuth } from '@components/AuthProvider';
 import predictionInstance from '@services/api/predict';
 import { PredictResult } from '@customTypes/api/predict';
 import WebcamComponent from '@components/WebcamComponent';
-import { useWebcam } from '@hooks/useWebcam';
 import RecordingToggleButton from '@components/RecordingToggleButton';
 
 const errorStyles = {
@@ -80,7 +79,13 @@ const Prediction: React.FC = () => {
     };
   }, [stream]);
 
-  const processResult = (result: PredictResult[]) => {
+  const processResult = (result: PredictResult[] | any[]) => {
+    // Check if result is an array
+    if (!Array.isArray(result)) {
+      console.error('Error: Result is not any array');
+      return;
+    }
+
     if (result.length <= 3) {
       setTopResults(result);
     } else {
@@ -100,25 +105,31 @@ const Prediction: React.FC = () => {
     }
   }, [mediaBlobUrl, awaitUpload]);
 
-  const uploadVideo = async (blobUrl: string) => {
+  const uploadVideo = (blobUrl: string) => {
     //videoname
     const randomName = userEmail + Math.random().toString(36).substring(7) + '.mp4';
 
-    try {
-      const response = await fetch(blobUrl);
-      const blob = await response.blob();
-      const formData = new FormData();
-      formData.append('video', blob, randomName);
+    fetch(blobUrl)
+      .then(response => {
+        return response.blob();
+      })
+      .then(blob => {
+        // Create a FormData object and append the blob
+        const formData = new FormData();
+        formData.append('video', blob, randomName);
 
-      const predictionResult = await predictionInstance.postPrediction(formData, access_token);
-
-      console.log('Prediction result:', predictionResult);
-      processResult(predictionResult.result);
-      setTrackReq(false);
-    } catch (error) {
-      console.error('Error uploading video:', error);
-      setError('An error occurred. Please try again.');
-    }
+        // Post the prediction using the FormData object
+        return predictionInstance.postPrediction(formData, access_token);
+      })
+      .then(({ result }: { result: PredictResult[] }) => {
+        console.log('Prediction result:', result);
+        processResult(result);
+        setTrackReq(false);
+      })
+      .catch(error => {
+        console.error('Error uploading video:', error);
+        setError('An error occurred. Please try again.');
+      });
   };
 
   const getColor = (confident: number): string => {
@@ -201,7 +212,7 @@ const Prediction: React.FC = () => {
               </div>
             ))
           ) : (
-            <h1 className="text-black font-italic">Translation...</h1>
+            <h1 className="text-black font-italic">Translation...</h1> 
           )}
         </div>
         <div className="flex rounded-lg h-2/6 mx-10 mt-4 bg-[#e7f2f6] p-2">
