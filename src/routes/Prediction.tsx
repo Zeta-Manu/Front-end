@@ -107,13 +107,18 @@ const Prediction: React.FC = () => {
 
   const uploadVideo = (blobUrl: string) => {
     //videoname
-    const randomName = userEmail + Math.random().toString(36).substring(7) + '.mp4';
+    if (!blobUrl) {
+      console.error('Blob URL is missing or invalid.');
+      setError('Blob URL is missing or invalid.');
+      return;
+    }
 
     fetch(blobUrl)
       .then(response => {
         return response.blob();
       })
       .then(blob => {
+        const randomName = userEmail + Math.random().toString(36).substring(7) + '.mp4';
         // Create a FormData object and append the blob
         const formData = new FormData();
         formData.append('video', blob, randomName);
@@ -189,9 +194,11 @@ const Prediction: React.FC = () => {
         {error && <div style={errorStyles}>{error}</div>}
         {showRecordedVideo && (
           <div>
-            <video ref={videoRef} autoPlay loop playsInline>
+            <video src={mediaBlobUrl} autoPlay playsInline loop>
               <track kind="captions" srcLang="en" label="English" />
             </video>
+
+
           </div>
         )}
       </div>
