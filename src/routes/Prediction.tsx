@@ -5,6 +5,7 @@ import 'react-circular-progressbar/dist/styles.css';
 import PropTypes from 'prop-types';
 
 import { useAuth } from '@components/AuthProvider';
+import predictionInstance from '@services/api/predict';
 import { PredictResult } from '@customTypes/api/predict';
 import WebcamComponent from '@components/WebcamComponent';
 import { useWebcam } from '@hooks/useWebcam';
@@ -41,17 +42,18 @@ VideoPreview.propTypes = {
 };
 
 const Prediction: React.FC = () => {
-  const { streamActive } = useWebcam();
+  // const { streamActive } = useWebcam();
   const { startRecording, stopRecording, mediaBlobUrl } = useReactMediaRecorder({
     audio: false,
     video: true,
   });
   const [showRecordedVideo, setShowRecordedVideo] = useState<boolean>(false);
   const [confident, setConfident] = useState<number>(0);
-  const [awaitUpload, setAwaitUpload] = useState<boolean>(false);
+  const [awaitUpload] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [topResults, setTopResults] = useState<PredictResult[]>([]);
   const [trackReq, setTrackReq] = useState<boolean>(false);
+  const [isRecording, setIsRecording] = useState(false);
 
   const { access_token, userEmail } = useAuth();
 
@@ -98,49 +100,25 @@ const Prediction: React.FC = () => {
     }
   }, [mediaBlobUrl, awaitUpload]);
 
-  const uploadVideo = (blobUrl: string) => {
+  const uploadVideo = async (blobUrl: string) => {
     //videoname
     const randomName = userEmail + Math.random().toString(36).substring(7) + '.mp4';
 
-    fetch(blobUrl)
-      .then((res) => res.blob())
-      .then((blob) => {
-        const formData = new FormData();
-        formData.append('video', blob, randomName);
+    try {
+      const response = await fetch(blobUrl);
+      const blob = await response.blob();
+      const formData = new FormData();
+      formData.append('video', blob, randomName);
 
-        fetch(import.meta.env.VITE_PREDICT_ENDPOINT, {
-          method: 'POST',
-          headers: {
-            accept: 'application/json',
-            Authorization: 'Bearer ' + access_token,
-          },
-          body: formData,
-        })
-          .then((response) => {
-            if (response.ok) {
-              console.log('sendvideo success');
-              return response.json();
-            } else if (response.status === 400) {
-              setError('Bad request');
-            } else {
-              setError('An unexpected error occurred. Please try again.');
-            }
-          })
-          .then((data) => {
-            console.log(data);
-            console.log(data.result);
-            processResult(data.result);
-            setTrackReq(false);
-          })
-          .catch((error) => {
-            console.error('Sending error:', error);
-            throw error;
-          });
-      })
-      .catch((error) => {
-        console.error('Error fetching blob:', error);
-        throw error;
-      });
+      const predictionResult = await predictionInstance.postPrediction(formData, access_token);
+
+      console.log('Prediction result:', predictionResult);
+      processResult(predictionResult.result);
+      setTrackReq(false);
+    } catch (error) {
+      console.error('Error uploading video:', error);
+      setError('An error occurred. Please try again.');
+    }
   };
 
   const getColor = (confident: number): string => {
@@ -167,20 +145,15 @@ const Prediction: React.FC = () => {
   };
 
   // Fix: Add new state for the button
-  const handleToggleRecording = async () => {
-    try {
-      if (streamActive) {
-        await stopRecording();
-        console.log('Recording stopped');
-      } else {
-        await startRecording();
-        console.log('Recording started');
-      }
-      setAwaitUpload(true);
-      setError('');
-    } catch (error) {
-      setError('An error occurred. Please try again. ');
-      console.error('Recording error:', error);
+  const handleToggleRecording = () => {
+    if (isRecording) {
+      stopRecording();
+      setIsRecording(false);
+      console.log('Recording stopped');
+    } else {
+      startRecording();
+      setIsRecording(true);
+      console.log('Recording started');
     }
   };
 
