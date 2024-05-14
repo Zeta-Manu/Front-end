@@ -48,7 +48,7 @@ const Prediction: React.FC = () => {
   });
   const [showRecordedVideo, setShowRecordedVideo] = useState<boolean>(false);
   const [confident, setConfident] = useState<number>(0);
-  const [awaitUpload] = useState<boolean>(false);
+  const [awaitUpload, setAwaitUpload] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
   const [topResults, setTopResults] = useState<PredictResult[]>([]);
   const [trackReq, setTrackReq] = useState<boolean>(false);
@@ -160,10 +160,13 @@ const Prediction: React.FC = () => {
     if (isRecording) {
       stopRecording();
       setIsRecording(false);
+      setAwaitUpload(false);
+      setTrackReq(true);
       console.log('Recording stopped');
     } else {
       startRecording();
       setIsRecording(true);
+      setAwaitUpload(true);
       console.log('Recording started');
     }
   };
