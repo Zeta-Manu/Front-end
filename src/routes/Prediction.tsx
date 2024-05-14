@@ -189,7 +189,9 @@ const Prediction: React.FC = () => {
         {error && <div style={errorStyles}>{error}</div>}
         {showRecordedVideo && (
           <div>
-            <video src={mediaBlobUrl} controls autoPlay loop />
+            <video ref={videoRef} autoPlay loop playsInline>
+              <track kind="captions" srcLang="en" label="English" />
+            </video>
           </div>
         )}
       </div>
@@ -215,7 +217,7 @@ const Prediction: React.FC = () => {
               </div>
             ))
           ) : (
-            <h1 className="text-black font-italic">Translation...</h1> 
+            <h1 className="text-black font-italic">Translation...</h1>
           )}
         </div>
         <div className="flex rounded-lg h-2/6 mx-10 mt-4 bg-[#e7f2f6] p-2">
